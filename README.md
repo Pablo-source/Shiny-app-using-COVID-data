@@ -14,7 +14,7 @@ The Shiny app is structured into two sections: Maps and plots. Two tabs display 
 
 I am using this app to test new Shiny, CSS and HTML features, I will build the app to include other technologies such as React and node.js. I intend to learn them to enhance the interactivity of this existing app.
 
-## Data from by John Hopkins University 2019 Novel Coronavirus Visual Dashboard
+## Downloaded data for the app from John Hopkins University 2019 Novel Coronavirus Visual Dashboard
 
 Data for this app is produced by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE) for their 2019 Novel Coronavirus Visual Dashboard and Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
 
