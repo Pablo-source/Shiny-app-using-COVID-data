@@ -14,17 +14,19 @@ The Shiny app is structured into two sections: Maps and plots. Two tabs display 
 
 I am using this app to test new Shiny, CSS and HTML features, I will build the app to include other technologies such as React and node.js. I intend to learn them to enhance the interactivity of this existing app.
 
-# OrShiny-app-using-COVID-data
+# Data produced by John Hopkins University 2019 Novel Coronavirus Visual Dashboard
 
+All data for this shiny app comes from the data repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
+
+John Hopkins website sotoring daily CODIV-19 data files for each country
+
+https://github.com/CSSEGISandData/COVID-19
+ 
 The data folder containes the downloaded compressed .csv files from John Hopkins Github repository 
 - covid19JH.zip
 
-John Hopkins website sotoring daily CODIV-19 data files for each country
-https://github.com/CSSEGISandData/COVID-19
-
 The specific file to get latest Covid19 figures from is this github repo below: 
 https://github.com/CSSEGISandData/COVID-19/archive/master.zip
-
 
 Once the compressed file is dowloaded into the data folder, we obtain three input files for the Shiny app:
 
