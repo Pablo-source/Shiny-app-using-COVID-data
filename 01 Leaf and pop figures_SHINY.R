@@ -6,7 +6,6 @@
 # 2 Include those countries with no data
 # 3 Merge population figures with countries with no data (left_join)
 getwd()
-setwd("C:/Pablo UK/43 R projects 2021/04 My Shiny app/04 Mycovid19 app")
 
 # # Include population figures 
 source("UI/ui_get_population_figures.R",local =TRUE) 

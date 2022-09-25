@@ -213,7 +213,7 @@ rm(list=ls()[!(ls()%in%c('PLOT_LEAFLET_CDR_NUM','PLOT_LEAFLET_MAPS'))])
 #### We only keep these two files: 
 # PLOT_LEAFLET_CDR_NUM
 # PLOT_LEAFLET_MAPS
-save.image("C:/Pablo UK/43 R projects 2021/04 My Shiny app/04 Mycovid19 app/PLOT LEAFLET CDR NUM.RData")
+save.image("~/PLOT LEAFLET CDR NUM.RData")
 
 
 
