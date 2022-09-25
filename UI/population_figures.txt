@@ -1,0 +1,22 @@
+This folde will contain the R script to obtain population figures required to calculate the rates for COVID19 Indicators. 
+
+File is called "ui_get_population_figures.R"
+
+It uses WDI library to obtain WDI population figures
+
+install.packages("WDI")
+library(WDI)
+
+## ui_get_population figures.R
+# Get Total population by country indicator "SP.POP.TOTL"
+getwd()
+
+# LOAD population figures in the right way
+WDIinputdata <- WDI(indicator=c("SP.POP.TOTL"),extra=TRUE)
+
+**Finally these two main data sets are retained to populate the final Shiny app**
+
+- POP_POPULATED
+- PLOT_LEAFLET_CDR_NUM  (This is a specific data set including Lat and Long fields to draw Leaflet map)
+
+  rm(list=ls()[!(ls()%in%c('POP_POPULATED','PLOT_LEAFLET_CDR_NUM'))])
