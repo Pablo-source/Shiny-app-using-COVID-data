@@ -2,6 +2,10 @@ The data folder containes the downloaded compressed .csv files from John Hopkins
 - covid19JH.zip
 
 Website for the John Hopkins data repo
+https://github.com/CSSEGISandData/COVID-19
+
+The specific file to get latest Covid19 figures from is this github repo below: 
+https://github.com/CSSEGISandData/COVID-19
 
 Once the compressed file is dowloaded into the data folder, we obtain three input files for the Shiny app:
 
