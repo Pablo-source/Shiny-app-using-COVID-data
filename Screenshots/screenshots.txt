@@ -1,0 +1,1 @@
+This folder will include screenshots of the actual development of the Shiny app using covid data
