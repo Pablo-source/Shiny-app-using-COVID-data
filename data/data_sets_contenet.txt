@@ -1,4 +1,14 @@
 The data folder containes the downloaded compressed .csv files from John Hopkins repo 
+- covid19JH.zip
 
-Once dowloaded, these are the three input files for the Shiny app:
+Website for the John Hopkins data repo
 
+Once the compressed file is dowloaded into the data folder, we obtain three input files for the Shiny app:
+
+- "time_series_covid19_confirmed_global.csv",
+- "time_series_covid19_deaths_global.csv",
+- "time_series_covid19_recovered_global.csv"
+
+These three files are the COVID indicators: new, deaths and recovered cases that we will merge with population data to obtain specific population reates to compare values across countries.
+                                
+                                
