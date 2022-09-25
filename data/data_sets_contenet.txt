@@ -1,0 +1,4 @@
+The data folder containes the downloaded compressed .csv files from John Hopkins repo 
+
+Once dowloaded, these are the three input files for the Shiny app:
+
