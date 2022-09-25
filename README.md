@@ -14,18 +14,17 @@ The Shiny app is structured into two sections: Maps and plots. Two tabs display 
 
 I am using this app to test new Shiny, CSS and HTML features, I will build the app to include other technologies such as React and node.js. I intend to learn them to enhance the interactivity of this existing app.
 
-# Data produced by John Hopkins University 2019 Novel Coronavirus Visual Dashboard
+## Data from by John Hopkins University 2019 Novel Coronavirus Visual Dashboard
 
-All data for this shiny app comes from the data repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
+Data for this app is produced by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE) for their 2019 Novel Coronavirus Visual Dashboard and Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
 
-John Hopkins website sotoring daily CODIV-19 data files for each country
+John Hopkins repository stores daily CODIV-19 data files for each country worldwide
 
 https://github.com/CSSEGISandData/COVID-19
  
 The data folder containes the downloaded compressed .csv files from John Hopkins Github repository 
-- covid19JH.zip
 
-The specific file to get latest Covid19 figures from is this github repo below: 
+Specific file to get latest Covid19 figures JHU: 
 https://github.com/CSSEGISandData/COVID-19/archive/master.zip
 
 Once the compressed file is dowloaded into the data folder, we obtain three input files for the Shiny app:
@@ -34,7 +33,7 @@ Once the compressed file is dowloaded into the data folder, we obtain three inpu
 - "time_series_covid19_deaths_global.csv",
 - "time_series_covid19_recovered_global.csv"
 
-These three files are the COVID indicators: new, deaths and recovered cases that we will merge with population data to obtain specific population reates to compare values across countries.
+These three files are the COVID indicators used in the Shiny app: new, deaths and recovered cases merged with population data to obtain specific population reates to allow comparisons across countries.
                                 
                                 
 
