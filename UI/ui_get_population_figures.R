@@ -2,7 +2,7 @@
 
 # 1 Load required libraries
 library(tidyverse)
-install.packages("WDI")
+#install.packages("WDI")
 library(WDI)
 
 ## ui_get_population figures.R
@@ -36,7 +36,7 @@ POP_DATA_2019 <- POP_DATA_WDI
 
 ## sAVE POPULATION DATA
 # Keep just plot_leaflet_rates KEEP JUST 
-rm(list=ls()[!(ls()%in%c('POP_DATA_WDI','POP_DATA_2019','PLOT_LEAFLET_CDR_NUM','PLOT_LEAFLET_RATES'))])
+rm(list=ls()[!(ls()%in%c('POP_DATA_WDI','POP_DATA_2019','PLOT_LEAFLET_CDR_NUM','PLOT_LEAFLET_RATES','PLOT_LEAFLET_MAPS'))])
 
 # Write it to data folder using here() functions
 write.csv(POP_DATA_WDI,here("data","POP_DATA_2019.csv"), row.names = TRUE)
@@ -53,7 +53,7 @@ CNpop<-c("Bahamas, The","Brunei Darussalam","Congo, Dem. Rep.", "Congo, Rep." , 
          "Kyrgyz Republic", "Micronesia, Fed. Sts." ,"Russian Federation"  , "St. Kitts and Nevis",  "St. Lucia","St. Vincent and the Grenadines" ,
          "Slovak Republic","Syrian Arab Republic","United States", "Venezuela, RB", "Yemen, Rep.")
 
-length(CNpop)
+length(CNpop) 
 
 CNindic<-c("Bahamas","Brunei","Congo (Brazzaville)","Congo (Kinshasa)","Egypt", "Gambia" , "Iran"   , "Korea, South", 
            "Kyrgyzstan"  , "Micronesia", "Russia", "Saint Kitts and Nevis"  ,"Saint Lucia",  "Saint Vincent and the Grenadines",
@@ -70,7 +70,7 @@ POP_POPULATED
 getwd()  
 
 # sAVE RAW Confirmed Death Recovered figures
-  rm(list=ls()[!(ls()%in%c('POP_POPULATED','PLOT_LEAFLET_CDR_NUM'))])
+rm(list=ls()[!(ls()%in%c('POP_POPULATED','PLOT_LEAFLET_CDR_NUM','PLOT_LEAFLET_MAPS'))])
 
 # Write it to data folder using here() functions
 # Save two main data population  sets to data folder 'POP_POPULATED','PLOT_LEAFLET_CDR_NUM'
