@@ -34,7 +34,7 @@ DownloadCOVIDData <- function() {
   
   # Create data directory if doesn't exist
     if(!dir.exists("data")){dir.create("data")}
-    if(!dir.exists("CHECKS")){dir.create("CHECKS")}
+    if(!dir.exists("Checks")){dir.create("Checks")}
   # Download master.zip file 
   download.file(
     url = "https://github.com/CSSEGISandData/COVID-19/archive/master.zip",
