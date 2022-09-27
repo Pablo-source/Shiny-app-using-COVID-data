@@ -17,6 +17,12 @@ library("fs")
 library("leaflet")
 library("plotly")
 library("tidyverse")
+# Library here for relative paths creation
+library("here")
+
+# Check your project directory
+My_project_directory <- here()
+My_project_directory
 
 # Check installed packages 
 Mypath <-.libPaths() 
@@ -71,17 +77,17 @@ Dataupdate <- function(){
 Dataupdate()
 
 #  2. Read in the downloaded .csv files
-# C:\Pablo UK\43 R projects 2020\04 My Shiny app\10 Shiny TEMPLATES\LEAFLET MAP\Interactive maps\data
 
-#input_covid <- list.files("C:/Pablo UK/43 R projects 2020/04 My Shiny app/04 Mycovid19 app/data",pattern = "_global*.csv")
-#file_Name <-c("data_confirmed","data_deceased","data_recovered")
+#file_Name <-c("time_series_covid19_confirmed_global.csv","time_series_covid19_deaths_global.csv",
+# "time_series_covid19_recovered_global.csv")
 
 getwd() 
 
 input_covid <- list.files("data/",".csv")
 
 NFILES <- length(input_covid)
-file_Name <-c("data_confirmed","data_deceased","data_recovered","WDI_indicators")
+
+file_Name <-c("data_confirmed","data_deceased","data_recovered")
 
 for(i in 1:NFILES) {     
   assign(paste0(file_Name[i]),                                   # Read and store data frames
@@ -127,29 +133,27 @@ recovered_tidy <- data_recovered %>%
                         mutate(date = as.Date(date,"%m/%d/%y"))
 head(recovered_tidy)
 
-file_pathCHK <-('C://Pablo UK//43 R projects 2021//04 My Shiny app//04 Mycovid19 app//CHECKS/')
 
-File_name_conf <-'/PITVOTED_CONFIRMED.csv'
-File_name_dec <-'/PIVOTED_DECEASED.csv' 
-File_name_rec <-'/PIVOTED_RECOVERED.csv' 
 
-write.csv(confirmed_tidy,paste0(file_pathCHK,File_name_conf),row.names = T)
-write.csv(deceased_tidy,paste0(file_pathCHK,File_name_dec),row.names = T)
-write.csv(recovered_tidy,paste0(file_pathCHK,File_name_rec),row.names = T)
+# Save checks in new sub_folder called Checks using HERE package 
+write.csv(confirmed_tidy,here("Checks","PITVOTED_CONFIRMED.csv"), row.names = TRUE)
+write.csv(deceased_tidy,here("Checks","PITVOTED_DECEASED.csv"), row.names = TRUE)
+write.csv(recovered_tidy,here("Checks","PITVOTED_RECOVERED.csv"), row.names = TRUE)
 
-# Now we merge them together
+# Now we merge CONFIRMED, DECEASED AND RECOVERED data frames together
+
 # 01-02 Merge DECEASED and CONFIRMED files
 MAPDATA <- confirmed_tidy %>% 
               full_join(deceased_tidy)
 
-File_name <-'/FULL_JOIN_conf_dec.csv' 
-write.csv(MAPDATA,paste0(file_pathCHK,File_name),row.names = T)
+# Write mapdata to checks folder
+write.csv(MAPDATA,here("Checks","FULL_JOIN_conf_dec.csv"), row.names = TRUE)
 
-# 01-02 Merge with RECOVERED data
+# 01-02 Merge DECEASED AND CONFIRMED with RECOVERED data
 MAPDATAF <- MAPDATA %>% 
               full_join(recovered_tidy) %>% 
               arrange(Province,Country,date) %>% 
-              #Recode NA values into 0 
+              # Recode NA values into 0 
               mutate(  
                 Confirmed = ifelse(is.na(Confirmed),0,Confirmed),
                 Deaths = ifelse(is.na(Deaths),0,Deaths),
@@ -169,17 +173,19 @@ MAPDATAH <- MAPDATAG %>%
 # we only need the data_evolution dataset
 rm(list=ls()[! ls() %in% c("MAPDATAH")])
 
-
 #### **5. Two output files: COVID19 metrics by day and COVID metrics plus Lat Long variable for Leaflet maps 
+#
+#  COVID19 Leaflet Map, file :  "PLOT_LEAFLET_MAPS"
+#  COVID19 population rates, file: "PLOT_LEAFLET_CDR_NUM" 
 
-### **5.1 COVID19 Leaflet Map
+### **5.1 COVID19 Leaflet Map, file :  "PLOT_LEAFLET_MAPS"
 PLOT_LEAFLET_MAPS <- MAPDATAH %>%
                      pivot_wider(names_from = Metric, values_from = c(value))
 
 File_name <-'/PLOT_LEAFLET_MAPS.csv' 
 MAPcountrieslist <-unique(PLOT_LEAFLET_MAPS$Country)
 
-### **5.2 COVID19 population rates
+### **5.2 COVID19 population rates, file: "PLOT_LEAFLET_CDR_NUM"
 # Remove  (removing coordinates variables)
 PLOT_LEAFLET2_conf <- PLOT_LEAFLET_MAPS %>% 
                 select(Country,date,Confirmed) %>% 
@@ -213,7 +219,7 @@ rm(list=ls()[!(ls()%in%c('PLOT_LEAFLET_CDR_NUM','PLOT_LEAFLET_MAPS'))])
 #### We only keep these two files: 
 # PLOT_LEAFLET_CDR_NUM
 # PLOT_LEAFLET_MAPS
-save.image("~/PLOT LEAFLET CDR NUM.RData")
+save.image("~/SHINY APP DATA SETS.RData")
 
 
 
