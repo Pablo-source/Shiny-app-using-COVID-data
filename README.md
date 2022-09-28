@@ -35,7 +35,8 @@ Once the compressed file is dowloaded into the data folder, we obtain three inpu
 
 These three files are the COVID indicators used in the Shiny app: new, deaths and recovered cases merged with population data to obtain specific population reates to allow comparisons across countries.
 
-- *Map tab*
+- *Map tab using leaflet and animated maps*
 ![Shiny Map tab](https://user-images.githubusercontent.com/76554081/192869006-37079f52-5278-4415-a88b-95ae34d29b05.png)
 
-
+- *Plots tab using Potly interactive library*
+![Plot tab PLOTLY interactive plots](https://user-images.githubusercontent.com/76554081/192869436-b413e6e0-a8fd-4310-b5a7-5bd8cf833278.png)
