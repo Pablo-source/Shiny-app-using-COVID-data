@@ -40,11 +40,10 @@ fluidPage (
   fluidRow(   
     box(
       column(6,
-             h3("The details of the Shiny deployment and app R scripts running under the Shiny app, 
-                can be found in the following GIthub repo MYREPO")
+             h3("The details of the Shiny R scripts can be cloned from this Github repository")
       ), 
       column(6,
-             h3("Pablo Leon-Rodenas  https://uk.linkedin.com/in/pabloleonrodenas/en  Analytics Developer at NHS Improvement")
+             h3("Pablo-source, on this URL https://github.com/Pablo-source/Shiny-app-using-COVID-data")
       ),
       width=15
     )
