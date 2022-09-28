@@ -12,7 +12,6 @@ source("UI/ui_get_population_figures.R",local =TRUE)
 
 getwd()
 # PLOT_POP_RATESC.csv
-
 library(readr)
 library(dplyr)
 library(ggplot2)
@@ -28,6 +27,7 @@ head(PLOT_LEAFLET_MAPS)
 # CLEAN POPULATION FIGURES 
 # POPD
 POPD <- POP_POPULATED %>% select( country,year,population) 
+
 # 2 Include those countries with no data
 noData<-data.frame(
   country=c("Burma","Czechia","Diamond Princess","Holy See","Laos","MS Zaandam","Taiwan*"),
@@ -153,23 +153,12 @@ TEST_MISS <- POPG_RATESF  %>%
 getwd()
 
 # Replace NA by 0 for specific variables
-file_pathCHK <-('C://Pablo UK//43 R projects 2021//04 My Shiny app//04 Mycovid19 app//CHECKS')
-File_name <-'/POPG_RATESF.csv' 
-write.csv(POPG_RATESF,paste0(file_pathCHK,File_name),row.names = T)
-
 # Check values
 head(POPG_RATESG)
 
 # REMOVE MISSING VALUES 
 POPRATESG <- POPG_RATESF %>% 
              drop_na()
-
-file_pathCHK <-('C://Pablo UK//43 R projects 2021//04 My Shiny app//04 Mycovid19 app//CHECKS')
-File_name <-'/POPRATESG.csv' 
-write.csv(POPRATESG,paste0(file_pathCHK,File_name),row.names = T)
-
-# Save worksapce 
-save.image("C:/Pablo UK/43 R projects 2020/04 My Shiny app/04 Mycovid19 app/CHECKS/POPRATESG.RData")
 
 # compute rolling average on POPRATESG WITHOUT ANY MISSING VALUE
 library(zoo)
@@ -180,16 +169,10 @@ RATES7DGAVG <- POPRATESG %>%
                        REC_ma07 = rollmean(RecD,k = 7, fill = NA),
                        DEATH_ma07 = rollmean(DeathD, k = 7, fill = NA))
 
-# Save worksapce 
-save.image("C:/Pablo UK/43 R projects 2020/04 My Shiny app/04 Mycovid19 app/CHECKS/RATES7DGAVG.RData")
-# final dataset for SHINY APP
-file_pathCHK <-('C://Pablo UK//43 R projects 2020//04 My Shiny app//04 Mycovid19 app//CHECKS')
-File_name <-'/RATESREADYSHINY.CSV' 
-write.csv(RATES7DGAVG,paste0(file_pathCHK,File_name),row.names = T)
-
 # FINAL DATASET THAT GOES INTO SHINY APP
 # Name: POP_POPULATED
- POP_POPULATED <- RATES7DGAVG
+POP_POPULATED <- RATES7DGAVG
+ 
 head(POP_POPULATED)
 names(POP_POPULATED)
 
@@ -216,15 +199,10 @@ POP_POPULATED <- POP_POPULATED_prev %>%
                             Rec_7D_10000 = Recovered_10000,
                             Death_7D_10000 = Deaths_10000)
 POP_POPULATED
-# AND FINALLY SAVE PLOT_LEAFLEFT database as PLOT_LEAFLET.Rdata 
-save.image("C:/Pablo UK/43 R projects 2021/04 My Shiny app/04 Mycovid19 app/DATA_FOR_SHINY_APP.Rdata")
-save.image("C:/Pablo UK/43 R projects 2021/04 My Shiny app/04 Mycovid19 app/RATES_FOR_SHINY_APP.Rdata")
-load("C:/Pablo UK/43 R projects 2021/04 My Shiny app/04 Mycovid19 app/PLOT LEAFLET CDR NUM.RData")
-rm(list=ls()[!(ls()%in%c('RATES7DGAVG','POP_POPULATED','PLOT_LEAFLET_CDR_NUM','PLOT_LEAFLET_MAPS'))])
 
+# Keep just these two data frames in our workspace at the end of this script 
 # PLOT_LEAFLET_MAPS
 # POP_POPULATED
-rm(list=ls()[!(ls()%in%c('POP_POPULATED','PLOT_LEAFLET_MAPS'))]) 
 
-save.image("C:/Pablo UK/43 R projects 2021/04 My Shiny app/04 Mycovid19 app/RATES_FOR_SHINY_APP_FINAL.Rdata")
+rm(list=ls()[!(ls()%in%c('PLOT_LEAFLET_MAPS','POP_POPULATED'))])
 

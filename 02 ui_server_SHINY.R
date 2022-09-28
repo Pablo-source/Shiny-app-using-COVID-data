@@ -1,6 +1,6 @@
 # R Script: 02 ui_server_SHINY.R
 
-# LOAD DATA SETS
+# LOAD DATA SETS 
 # - POP POPULATED
 # - PLOT_LEAFLET_MAPS
 # View(POP_POPULATED)
@@ -30,21 +30,18 @@ ui <- dashboardPage(
                     id = "tabs",
                     menuItem("About", tabName = "about", icon = icon("desktop")),
                     menuItem("Map", tabName = "map", icon = icon("map")),
-                    menuItem("Plots", tabName = "plot", icon = icon("wifi")),
-                    menuItem("Forecast", tabName = "forecast", icon = icon("chart-line")))
+                    menuItem("Plots", tabName = "plot", icon = icon("wifi"))
+                    )
   )
   ,
-  dashboardBody(  # Infobox: Total figures KPI world
-    fluidRow( infoBoxOutput("Total_cases_WORLD",width=3),
-              infoBoxOutput("Total_recovered_WORLD",width=3),
-              infoBoxOutput("Total_deaths_WORLD",width=3),
-                          infoBoxOutput("Date", width = 3)
-              
-              ),  
-    fluidRow(
+  dashboardBody(  
+    
+# Infobox: Total figures KPI UK
+        fluidRow(
                    infoBoxOutput("Totalrecovered_UK", width = 3),
                    infoBoxOutput("Totalcases_UK", width = 3),
-                   infoBoxOutput("Totaldeaths_UK", width = 3)
+                   infoBoxOutput("Totaldeaths_UK", width = 3),
+                   infoBoxOutput("Date", width = 3)
        
                   ),
  # We include the two new items on the sidebar
@@ -52,7 +49,7 @@ ui <- dashboardPage(
         tabItem(
             tabName="about", h1("About the COVID-19 app"),
         
-        fluidRow(box(source("UI/ui_about.R",local =TRUE),width=11))
+        fluidRow(box(source("UI/ui_about.R",local =T),width=11))
         ),
       
        tabItem(
@@ -134,98 +131,7 @@ server <- function(input,output) {
   RATESTable <- reactive(POP_POPULATED[POP_POPULATED$date == format(input$Time_Slider,"%Y/%m/%d"),])
 
 # TAB01 
-  # OUTPUT 01-03 INFOBOXES
-  output$Total_cases_WORLD <- renderValueBox({
-    
-    dataframeConf <- dailyData()
-    
-    dataframeConf2 <- dailyData() %>% 
-      select(Country,Province,date,Recovered) %>% 
-      filter(Country=="United Kingdom" &
-               is.na(Province))
-    
-    dataframeConfprev <- prevdailyData() 
-    
-    dataframeConfprev2 <- prevdailyData() %>% 
-      select(Country,Province,date,Recovered) %>% 
-      filter(Country=="United Kingdom" &
-               is.na(Province))
-    
-    valueBox(
-      paste0(
-        
-        format(
-          dataframeConf2$Recovered   
-          , big.mark = ','),
-        
-        #prettyNum(dataframeConf$Recovered,big.mark = ","),
-        
-        paste0("[",round(((dataframeConf2$Recovered - dataframeConfprev2$Recovered)/dataframeConfprev2$Recovered)*100,2),"%","]")
-      ), "Total cases worldwide | % change prev day |  -orange colour-", icon = icon("list"),
-      color = "orange"
-    )
-  })
-  output$Total_recovered_WORLD <- renderValueBox({
-    
-    dataframeConf <- dailyData()
-    
-    dataframeConf2 <- dailyData() %>% 
-      select(Country,Province,date,Recovered) %>% 
-      filter(Country=="United Kingdom" &
-               is.na(Province))
-    
-    dataframeConfprev <- prevdailyData() 
-    
-    dataframeConfprev2 <- prevdailyData() %>% 
-      select(Country,Province,date,Recovered) %>% 
-      filter(Country=="United Kingdom" &
-               is.na(Province))
-    
-    valueBox(
-      paste0(
-        
-        format(
-          dataframeConf2$Recovered   
-          , big.mark = ','),
-        
-        #prettyNum(dataframeConf$Recovered,big.mark = ","),
-        
-        paste0("[",round(((dataframeConf2$Recovered - dataframeConfprev2$Recovered)/dataframeConfprev2$Recovered)*100,2),"%","]")
-      ), "Total recovered worldwide | % change prev day |  -purple colour-", icon = icon("list"),
-      color = "purple"
-    )
-  })
-  output$Total_deaths_WORLD <- renderValueBox({
-    
-    dataframeConf <- dailyData()
-    
-    dataframeConf2 <- dailyData() %>% 
-      select(Country,Province,date,Recovered) %>% 
-      filter(Country=="United Kingdom" &
-               is.na(Province))
-    
-    dataframeConfprev <- prevdailyData() 
-    
-    dataframeConfprev2 <- prevdailyData() %>% 
-      select(Country,Province,date,Recovered) %>% 
-      filter(Country=="United Kingdom" &
-               is.na(Province))
-    
-    valueBox(
-      paste0(
-        
-        format(
-          dataframeConf2$Recovered   
-          , big.mark = ','),
-        
-        #prettyNum(dataframeConf$Recovered,big.mark = ","),
-        
-        paste0("[",round(((dataframeConf2$Recovered - dataframeConfprev2$Recovered)/dataframeConfprev2$Recovered)*100,2),"%","]")
-      ), "Total deaths worldwide | % change prev day |  -maroon colour-", icon = icon("list"),
-      color = "maroon"
-    )
-  })
-
+  # INFOBOX 01-03 - Total recovered UK 
   output$Totalrecovered_UK <- renderValueBox({
     
     dataframeConf <- dailyData()
@@ -256,6 +162,8 @@ server <- function(input,output) {
       color = "blue"
     )
   })
+  
+  # INFOBOX 01-03 - Total cases UK 
   output$Totalcases_UK <- renderValueBox({
     
     dataframeConf <- dailyData()
@@ -307,6 +215,7 @@ server <- function(input,output) {
       color = "purple"
     )
   })
+  
   output$Date   <- renderValueBox({
     
     dataframeDeaths <- dailyData()
