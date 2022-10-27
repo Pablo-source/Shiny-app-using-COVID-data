@@ -20,7 +20,7 @@ Data for this app is produced by the Johns Hopkins University Center for Systems
 
 John Hopkins repository stores daily CODIV-19 data files for each country worldwide
 
-https://github.com/CSSEGISandData/COVID-19
+https://github.com/CSSEGISandData/COVID-19 
  
 The data folder containes the downloaded compressed .csv files from John Hopkins Github repository 
 
