@@ -1,4 +1,5 @@
 # 00 Maps data prep_SHINY.R
+# Updated on 10th Dec 2022
  
 # Install required packages 
 # [shiny,shinydashboard,DT,fs,webstats,leaflet,plotly,tidyverse]
@@ -9,16 +10,21 @@
 #install.packages("plotly",dependencies = TRUE)
 
 # Load required packages library(tidyverse) library(readr)
-library("shiny")
-library("shinydashboard")
-library("DT")
-library("fs")
-# library("webstats")
-library("leaflet")
-library("plotly")
-library("tidyverse")
 # Library here for relative paths creation
-library("here")
+
+# Optmised: Using p_load() function from pacman package to load several libraries in one go
+#library("here")
+#library("shiny")
+#library("shinydashboard")
+#library("DT")
+#library("fs")
+# library("webstats")
+#library("leaflet")
+#library("plotly")
+#library("tidyverse")
+
+# Load required libraries 
+pacman::p_load(here,shiny,shinydashboard,DT,fs,leaflet,plotly,tidyverse)
 
 # Check your project directory
 My_project_directory <- here()
