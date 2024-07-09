@@ -26,6 +26,7 @@
 # Load required libraries 
 pacman::p_load(here,shiny,shinydashboard,DT,fs,leaflet,plotly,tidyverse)
 
+ChecksFlag = FALSE # or TRUE
 # Check your project directory
 My_project_directory <- here()
 My_project_directory
@@ -87,18 +88,19 @@ Dataupdate()
 #file_Name <-c("time_series_covid19_confirmed_global.csv","time_series_covid19_deaths_global.csv",
 # "time_series_covid19_recovered_global.csv")
 
-getwd() 
+getwd()
 
-input_covid <- list.files("data/",".csv")
+input_covid <- list.files("data/", pattern = "time_series.*\\.csv")
 
 NFILES <- length(input_covid)
 
-file_Name <-c("data_confirmed","data_deceased","data_recovered")
+file_Name <- c("confirmed", "deaths", "recovered")
 
-for(i in 1:NFILES) {     
-  assign(paste0(file_Name[i]),                                   # Read and store data frames
-         read_csv(paste0("data/",
-                         input_covid[i])))
+for (name in file_Name) {
+  match_name <- input_covid[grepl(name, input_covid)]
+  if(length(match_name) > 0) {
+    assign(paste0("data_",name), read_csv(paste0("data/",match_name)))
+  }
 }
 
 # Tidy up original datasets
@@ -119,11 +121,11 @@ confirmed_tidy <- data_confirmed %>%
 
 
 # DECEASED TIDY
-deceased_tidy <- data_deceased %>% 
+deceased_tidy <- data_deaths %>% 
                   rename(Province = 'Province/State',
                   Country = 'Country/Region') %>% 
                     pivot_longer(names_to = "date",
-                    cols = 5:ncol(data_deceased)) %>% 
+                    cols = 5:ncol(data_deaths)) %>% 
                     group_by(Province,Country,Lat,Long,date) %>% 
                     summarise("Deaths" = sum(value,na.rm = T)) %>% 
                     mutate(date = as.Date(date,"%m/%d/%y"))
@@ -142,9 +144,15 @@ head(recovered_tidy)
 
 
 # Save checks in new sub_folder called Checks using HERE package 
-write.csv(confirmed_tidy,here("Checks","PITVOTED_CONFIRMED.csv"), row.names = TRUE)
-write.csv(deceased_tidy,here("Checks","PITVOTED_DECEASED.csv"), row.names = TRUE)
-write.csv(recovered_tidy,here("Checks","PITVOTED_RECOVERED.csv"), row.names = TRUE)
+if (!file.exists("Checks")) {
+  dir.create("Checks")
+}
+
+if(ChecksFlag){
+  write.csv(confirmed_tidy,here("Checks","PITVOTED_CONFIRMED.csv"), row.names = TRUE)
+  write.csv(deceased_tidy,here("Checks","PITVOTED_DECEASED.csv"), row.names = TRUE)
+  write.csv(recovered_tidy,here("Checks","PITVOTED_RECOVERED.csv"), row.names = TRUE)
+}
 
 # Now we merge CONFIRMED, DECEASED AND RECOVERED data frames together
 
@@ -153,8 +161,9 @@ MAPDATA <- confirmed_tidy %>%
               full_join(deceased_tidy)
 
 # Write mapdata to checks folder
-write.csv(MAPDATA,here("Checks","FULL_JOIN_conf_dec.csv"), row.names = TRUE)
-
+if(ChecksFlag){
+  write.csv(MAPDATA,here("Checks","FULL_JOIN_conf_dec.csv"), row.names = TRUE)
+}
 # 01-02 Merge DECEASED AND CONFIRMED with RECOVERED data
 MAPDATAF <- MAPDATA %>% 
               full_join(recovered_tidy) %>% 
