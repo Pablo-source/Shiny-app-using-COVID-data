@@ -45,6 +45,7 @@ DownloadCOVIDData <- function() {
   # Download master.zip file 
   download.file(
     # File from CSSEGITandData repo: time_series_19-covid-Confirmed_archived_0325.csv
+    # file name: Confirmed_archived data.
     url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/archived_data/archived_time_series/time_series_19-covid-Confirmed_archived_0325.csv",
     destfile = "original_data_download/time_series_19-covid-Confirmed_archived_0325.csv")
   
