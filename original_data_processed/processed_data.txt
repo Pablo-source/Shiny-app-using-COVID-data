@@ -1,0 +1,8 @@
+# This file will include processed original files
+# It will include 10,000 rates for Confirmed, Deaths and Recovered cases
+# based on the World bank yearly population estimates for each country
+
+# Now we compute the rates again
+# CONFR =ceiling((ifelse(ConfM==0,0,ConfM/population)*10000)),
+# DEATHR =ceiling( (ifelse(DeathfM==0,0,DeathfM/population)*10000)),
+# RECR = ceiling((ifelse(RecfM==0,0,RecfM/population)*10000)),
