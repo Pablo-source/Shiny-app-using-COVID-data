@@ -102,3 +102,6 @@ write.csv(recovered_tidy,here("Checks","RECOVERED_pivoted.csv"), row.names = TRU
 # 3.5 Create new folder to store Quarto documentation about designing this Shiny dashboard
 # Folder name: "Shiny_howto_tutorials
 if (!file.exists("Shiny_howto_tutorials")) {dir.create("Shiny_howto_tutorials")}
+
+# Saved two .qmd files as templaets: - Mutating_Joins_dplyr.qmd, Pivot_long_wide_tidy.qmd
+
