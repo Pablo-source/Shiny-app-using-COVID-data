@@ -1,0 +1,4 @@
+We want to include 10,000 population rates calculation for each of the Confirmed, Recovered and Deceased COVID indicators downloaded from CSSEGITandData repo.
+Using {WDI} package we will load World Bank Total population by country
+https://github.com/vincentarelbundock/WDI
+The WDI package allows users to search and download data from over 40 datasets hosted by the World Bank, including the World Development Indicators ('WDI'), International Debt Statistics, Doing Business, Human Capital Index, and Sub-national Poverty indicators.
