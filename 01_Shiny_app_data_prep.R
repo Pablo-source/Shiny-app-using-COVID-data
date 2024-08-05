@@ -174,6 +174,9 @@ LEAFLET_MAPS_DATA
 METRICS_FOR_POP_RATES <- conf_rec_death_join_WIDE
 METRICS_FOR_POP_RATES
 
+
+rm(list=ls()[! ls() %in% c("LEAFLET_MAPS_DATA","METRICS_FOR_POP_RATES")])
+
 # Save both data sets in the "original_data_processed" folder:
 write.csv(LEAFLET_MAPS_DATA,here("original_data_processed","LEAFLET_MAPS_DATA.csv"), row.names = TRUE)
 write.csv(METRICS_FOR_POP_RATES,here("original_data_processed","METRICS_FOR_POP_RATES.csv"), row.names = TRUE)
