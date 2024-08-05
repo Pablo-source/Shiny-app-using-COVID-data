@@ -1,4 +1,4 @@
-"","Country_name","Lat","Long","date","Confirmed","Recovered","Deaths"
+"","Country","Lat","Long","date","Confirmed","Recovered","Deaths"
 "1","Australia",-35.4735,149.0124,2020-03-19,4,0,0
 "2","Australia",35.4437,139.638,2020-03-19,0,0,0
 "3","Australia",-33.8688,151.2093,2020-03-19,307,4,5

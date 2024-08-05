@@ -29,6 +29,12 @@ METRICS_original <- data_METRICS_FOR_POP_RATES %>%
                     select(Country, Lat, Long, date, Confirmed, Recovered, Deaths)
 
 
+# We will apply some calculations on this METRICS file below
+
+METRICS <- METRICS_original
+
+write.csv(METRICS,here("original_data_processed","METRICS_original.csv"), row.names = TRUE)
+
 # Check unique country names from this METRICS file
 METRICS_country_unique <- METRICS_original %>% select(Country) %>% distinct(Country)
 METRICS_country_unique
@@ -61,8 +67,6 @@ POPULATION_original <- WDI_countries_pop_2019 %>% select(Country = country,
 POPULATION_original
 head(POPULATION_original)
 
-# Remove previous intermediate data sets:(retain just METRICS and POPULATION_original data frames)
-rm(list=ls()[! ls() %in% c("METRICS","POPULATION_original","LEAFLET_MAPS_DATA","METRICS_FOR_POP_RATES")])
 
 # LIST OF COUNTRY NAMES FROM METRICS data frame that are slightly different written in the WDI_countries_pop_2019 file
 # List of missing population figures for the following mismatching country names
@@ -100,19 +104,59 @@ rm(list=ls()[! ls() %in% c("METRICS","POPULATION_original","LEAFLET_MAPS_DATA","
 # 3 APPLY CHANGES
 
 # 3.1 There are several records per day in the METRIC file
+# CALC01: Obtain one row per DAY
+
 ## Follow example from # Metric_population_rates_checks.R to obtain one single row per day summarising
 ## Confirmed, Recovered and Deaths figures 
 
+METRICS_daily <- METRICS 
+head(METRICS_daily)
+#   Country       Lat  Long date       Confirmed Recovered Deaths
+
+nrow(METRICS_daily)
+# 
+#> nrow(METRICS_daily)
+#[1] 31434
+
+
+rm(list=ls()[! ls() %in% c("METRICS_daily","POPULATION_original")])
+
+METRICS_daily_calc <- METRICS_daily %>% 
+  select(Country,date,Lat,Long,Confirmed,Recovered,Deaths) %>% 
+  group_by(Country,date,Lat,Long) %>%
+  summarise(
+    Confirmed_d = sum(Confirmed),
+    Recovered_d = sum(Recovered),
+    Deaths_d = sum(Deaths)
+  ) %>% 
+    ungroup()  # Include ungroup() after using group_by() to avoid "- attr(*, "groups")= tibble [30,938 × 4] (S3: tbl_df/tbl/data.frame)"
+               # so we can compute lag() on ungrouped integer variables.
+METRICS_daily_calc
+nrow(METRICS_daily_calc)
+# [1] 31000
+
+write.csv(METRICS_daily_calc,here("original_data_processed","METRICS_daily_calc.csv"), row.names = TRUE)
+
+# Remove previous intermediate data sets:(retain just METRICS and POPULATION_original data frames)
+rm(list=ls()[! ls() %in% c("METRICS_daily_calc","POPULATION_original","LEAFLET_MAPS_DATA","METRICS_FOR_POP_RATES")])
 
 
 
 # 3.2 Apply regex expresions before merge to both METRICS_original and POPULATION_original files
 # Remove punctuation symbols Country_name = gsub("[[:punct:]]", "", Country)
 
-METRICS_cleansing <- METRICS_original %>% 
+METRICS_cleansing <- METRICS_daily_calc %>% 
            mutate(Country_name = gsub("[[:punct:]]", "", Country))
 
-METRICS <- METRICS_cleansing %>% select(Country_name, Lat, Long, date, Confirmed, Recovered, Deaths)
+METRICS <- METRICS_cleansing %>% select(
+                                        Country = Country_name,
+                                        Lat, Long, date, 
+                                        Confirmed = Confirmed_d, 
+                                        Recovered = Recovered_d, 
+                                        Deaths = Deaths_d)
+
+write.csv(METRICS,here("original_data_processed","METRICS.csv"), row.names = TRUE)
+
 
 POPULATION_cleansing <- POPULATION_original %>% 
   mutate(Country_name = gsub("[[:punct:]]", "", Country))
@@ -120,34 +164,113 @@ POPULATION_cleansing <- POPULATION_original %>%
 names(POPULATION_cleansing)
 # [1] "Country"      "year"         "population"   "Country_name"
 
-POPULATION <- POPULATION_cleansing %>% select(Country_name,year,population)
+POPULATION_Recode <- POPULATION_cleansing %>% select(Country = Country_name,
+                                              year,population)
 
-names(POPULATION)
+names(POPULATION_Recode)
+
+# 3.3 Prior to merging POPULATION and MERTICS files, rename POPULATION contry names so they math METRICS names
+
+Country_name_from_METRICS_file	METRICS	POPULATION_original
+
+#   Country    name_METRICS name_POPULATION
+# 2 Brunei    	Brunei	Brunei Darussalam
+# 3 Cape Verde   	Cape Verde	Cabo Verde
+# 8 East Timor  	East Timor	POPULATION country name “Timor-Leste”
+# 9 Egypt	Egypt	POPULATION country name “Egypt, Arab Rep.”
+# 10 French Guiana	French Guiana	POPULATION country name “Guyana”
+# 11 Gambia, The	Gambia, The	POPULATION country name “Gambia, The” 
+# 15 Iran	Iran	POPULATION country name  “Iran, Islamic Rep.”
+# 18 Korea, South	Korea, South	POPULATION country name  Korea, Rep. 51764822
+# 19 Kyrgyzstan	Kyrgyzstan	POPULATION country name  “Kyrgyz Republic” 6456200
+# 22 Republic of the Congo	Republic of the Congo	Congo, Rep. 5570733
+# 24 Russia	Russia	POPULATION country name Russian Federation 145453291
+# 25 Saint Lucia	Saint Lucia	POPULATION country name St. Lucia 178583
+# 26 Saint Vincent and the Grenadines	Saint Vincent and the Grenadinesenadines	POPULATION country name St. Vincent and the Grenadines 104924
+# 27 Slovakia	Slovakia	POPULATION country name Slovak Republic 5454147
+# 28 Syria	Syria	POPULATION country name Syrian Arab Republic 20098251
+# 30 The Bahamas	The Bahamas	POPULATION country name Bahamas, The 404557 
+# 31 The Gambia	The Gambia	POPULATION country name Gambia, The 2508883
+# 32 Turkey	Turkey	POPULATION country nameTurkiye 82579440
+# 33 US	US	POPULATION country nameUnited States 328329953
+# 34 Venezuela	Venezuela	POPULATION country nameVenezuela, RB 28971683
+
+POPULATION_Recode <- as.data.frame(POPULATION_cleansing_subset)
+
+names(POPULATION_Recode)
+str(POPULATION_Recode)
+# [1] "Country"    "year"       "population"
+
+# Original POPULATION names
 
 
-# 4. In THE  “02 Covid_metrics_population_rates.R” file for the METRICS FILE, compute a SUM() for each Confirmed, Recovered and Deaths cases by date, 
-#    so we have just one Row per country per day.
+POP_ORIGINAL <-c("Brunei Darussalam","Cabo Verde","TimorLeste","Egypt Arab Rep",
+                 "Gambia The","Iran Islamic Rep", "Korea Rep","Kyrgyz Republic",
+                 "Congo Rep","Russian Federation","St Lucia",
+                 "St Vincent and the Grenadines","Slovak Republic",
+                 "Syrian Arab Republic","Bahamas The","Turkiye","United States")
+length(POP_ORIGINAL) 
+# 18
 
-nrow(METRICS)
-# [1] 31434
-rm(list=ls()[! ls() %in% c("METRICS")])
+POP_TOMERGE <-c("Brunei","Cape Verde","East Timor","Egypt",
+                "Gambia The","Iran","Korea South","Kyrgyzstan",
+                "Republic of the Congo","Russia","Saint Lucia",
+                "Saint Vincent and the Grenadines","Slovakia",
+                "Syria","Bahamas The","Turkey","US")
+length(POP_TOMERGE)
+# 18 
+
+# Then we replace non-standard country names by standardized country names values 
+# POPULATION_Recode$Country_name[which(POPULATION_Recode_comp$Country_name %in% POP_ORIGINAL ), "Country_name"] <- POP_TOMERGE
 
 
+# 3.3.1 Another option is to use standard recode and case_when() functions
+head(POPULATION_Recode)
+POPULATION_Recode$Country_names <- case_when(POPULATION_Recode$Country %in% c("Brunei Darussalam") ~ "Brunei",
+                                             POPULATION_Recode$Country %in% c("Cabo Verde") ~ "Cape Verde",
+                                             POPULATION_Recode$Country %in% c("TimorLeste") ~ "East Timor",
+                                             POPULATION_Recode$Country %in% c("Egypt Arab Rep") ~ "Egypt",
+                                             POPULATION_Recode$Country %in% c("Gambia The") ~ "Gambia The",
+                                             POPULATION_Recode$Country %in% c("Iran Islamic Rep") ~ "Iran",
+                                             POPULATION_Recode$Country %in% c("Korea Rep") ~ "Korea South",
+                                             POPULATION_Recode$Country %in% c("Kyrgyz Republic") ~ "Kyrgyzstan",
+                                             POPULATION_Recode$Country %in% c("Congo Rep") ~ "Republic of the Congo",
+                                             POPULATION_Recode$Country %in% c("Russian Federation") ~ "Russia",
+                                             POPULATION_Recode$Country %in% c("St Lucia") ~ "Saint Lucia",
+                                             POPULATION_Recode$Country %in% c("St Vincent and the Grenadines") ~ "Saint Vincent and the Grenadines",
+                                             POPULATION_Recode$Country %in% c("Slovak Republic") ~ "Slovakia",
+                                             POPULATION_Recode$Country %in% c("Syrian Arab Republic") ~ "Syria",
+                                             POPULATION_Recode$Country %in% c("Bahamas The") ~ "Bahamas The",
+                                             POPULATION_Recode$Country %in% c("Turkiye") ~ "Turkey",
+                                             POPULATION_Recode$Country %in% c("United States") ~ "US",
+                                             )
+POPULATION_Recode_clean <- POPULATION_Recode
+POPULATION_Recode_clean$Country_names[is.na(POPULATION_Recode_clean$Country_names)] <- POPULATION_Recode_clean$Country[is.na(POPULATION_Recode_clean$Country_names)]
 
 
-
-# Apply it to the entire METRICS data frame
-
-
-
-# This is the merge we will perform 
-METRICS_POP_RATES_checks <- left_join(METRICS,POPULATION_original,
-                                      by = join_by(Country == Country))
-METRICS_POP_RATES_checks
+# Later on Merge POPULATION AND METRIC data frames  
+# METRICS_POP_RATES_checks <- left_join(METRICS,POPULATION_original,
+#                                      by = join_by(Country == Country))
+# METRICS_POP_RATES_checks
 
 # Countries with missing population figures
-no_pop_countries <- METRICS_POP_RATES_checks %>% 
-  filter(is.na(population)) %>% 
-  distinct(Country)
-no_pop_countries
-write.csv(no_pop_countries,here("original_data_processed","countries_missing_population_figures.csv"), row.names = TRUE)
+# no_pop_countries <- METRICS_POP_RATES_checks %>% 
+#  filter(is.na(population)) %>% 
+#  distinct(Country)
+# no_pop_countries
+# write.csv(no_pop_countries,here("original_data_processed","countries_missing_population_figures.csv"), row.names = TRUE)
+
+# 3.4 MERGE METRICS WITH POPULATION_Recode_clean data frames 
+# At this stage the null values we will obtain for population are 
+
+
+
+# Datasets: 
+#  > METRICS
+#  > POPULATION_Recode_clean
+
+rm(list=ls()[! ls() %in% c("METRICS","POPULATION_Recode_clean")])
+
+
+METRICS
+
