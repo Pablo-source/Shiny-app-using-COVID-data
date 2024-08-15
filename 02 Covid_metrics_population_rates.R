@@ -170,9 +170,6 @@ POPULATION_Recode <- POPULATION_cleansing %>% select(Country = Country_name,
 names(POPULATION_Recode)
 
 # 3.3 Prior to merging POPULATION and MERTICS files, rename POPULATION contry names so they math METRICS names
-
-Country_name_from_METRICS_file	METRICS	POPULATION_original
-
 #   Country    name_METRICS name_POPULATION
 # 2 Brunei    	Brunei	Brunei Darussalam
 # 3 Cape Verde   	Cape Verde	Cabo Verde
@@ -196,9 +193,9 @@ Country_name_from_METRICS_file	METRICS	POPULATION_original
 # 34 Venezuela	Venezuela	POPULATION country nameVenezuela, RB 28971683
 
 POPULATION_Recode <- as.data.frame(POPULATION_cleansing_subset)
-
 names(POPULATION_Recode)
 str(POPULATION_Recode)
+
 # [1] "Country"    "year"       "population"
 
 # Original POPULATION names
@@ -225,6 +222,7 @@ length(POP_TOMERGE)
 
 
 # 3.3.1 Another option is to use standard recode and case_when() functions
+# New variable Country_names includes matching country names with METRICS data set
 head(POPULATION_Recode)
 POPULATION_Recode$Country_names <- case_when(POPULATION_Recode$Country %in% c("Brunei Darussalam") ~ "Brunei",
                                              POPULATION_Recode$Country %in% c("Cabo Verde") ~ "Cape Verde",
@@ -247,12 +245,6 @@ POPULATION_Recode$Country_names <- case_when(POPULATION_Recode$Country %in% c("B
 POPULATION_Recode_clean <- POPULATION_Recode
 POPULATION_Recode_clean$Country_names[is.na(POPULATION_Recode_clean$Country_names)] <- POPULATION_Recode_clean$Country[is.na(POPULATION_Recode_clean$Country_names)]
 
-
-# Later on Merge POPULATION AND METRIC data frames  
-# METRICS_POP_RATES_checks <- left_join(METRICS,POPULATION_original,
-#                                      by = join_by(Country == Country))
-# METRICS_POP_RATES_checks
-
 # Countries with missing population figures
 # no_pop_countries <- METRICS_POP_RATES_checks %>% 
 #  filter(is.na(population)) %>% 
@@ -260,17 +252,81 @@ POPULATION_Recode_clean$Country_names[is.na(POPULATION_Recode_clean$Country_name
 # no_pop_countries
 # write.csv(no_pop_countries,here("original_data_processed","countries_missing_population_figures.csv"), row.names = TRUE)
 
-# 3.4 MERGE METRICS WITH POPULATION_Recode_clean data frames 
-# At this stage the null values we will obtain for population are 
-
-
-
 # Datasets: 
 #  > METRICS
 #  > POPULATION_Recode_clean
 
 rm(list=ls()[! ls() %in% c("METRICS","POPULATION_Recode_clean")])
 
+## METRICS dataset. Variables ()
+names(METRICS)
+# [1] "Country"   "Lat"       "Long"      "date"      "Confirmed" "Recovered" "Deaths" 
+names(POPULATION_Recode_clean)
+# [1] "Country"       "year"          "population"    "Country_names"
+# keep  "year"          "population"    "Country_names"
 
-METRICS
+# 3.4 MERGE METRICS WITH POPULATION_Recode_clean data frames 
+# At this stage the null values we will obtain for population are 
+# variable Country_names includes matching country names with METRICS data set
 
+METRICS_merge <- METRICS %>% select(Country,Lat,Long,date,Confirmed,Recovered,Deaths)
+POPULATION_merge <- POPULATION_Recode_clean %>% select(Country_names,population)
+
+METRICS_POP_RATES_initial <- left_join(METRICS,POPULATION_Recode_clean,
+                                      by = join_by(Country == Country_names))
+METRICS_POP_RATES_initial
+
+# Check which Countries still have missing population figures
+# sort previous dataset by population using arrange()
+METRICS_POP_RATES_clean <- METRICS_POP_RATES_initial %>% 
+                           select(Country,Lat,Long,date,Confirmed,Recovered,Deaths,year,population)
+                           arrange(population)
+METRICS_POP_RATES_clean
+
+# Get countries list missing population figures
+missing_countries_pop <- METRICS_POP_RATES_initial %>% 
+                         arrange(population) %>% 
+                         filter(is.na(population)) %>% 
+                         select(Country) %>% 
+                         distinct(Country)
+missing_countries_pop
+
+write.csv(missing_countries_pop,here("original_data_processed","missing_countries_pop.csv"), row.names = TRUE)
+
+# 3.4.1 Create adhoc dataset with population figures from Word bank website
+# https://datatopics.worldbank.org/world-development-indicators/
+
+Country <-c("Vietnam","Taiwan")
+population <-c(95780000,23600000)
+
+Pop_missing_countries <-cbind.data.frame(Country,population)
+str(Pop_missing_countries)
+
+# Turn data.frame into a tibble
+Pop_missing_countries_data <- Pop_missing_countries %>% 
+                              select(Country,population) %>% 
+                              as_tibble()
+
+rm(list=ls()[! ls() %in% c("Pop_missing_countries_data","METRICS_POP_RATES_clean")])
+
+# Merge METRICS_POP_RATES_clean with Pop_missing_countries dataframe
+METRICS_POP_RATES_wrangling <- left_join(METRICS_POP_RATES_clean,Pop_missing_countries_data,
+                               by = join_by(Country))
+
+# Using new coalesce() function from DPLYR to find the first non-missing element
+# After the merge I want to keep non missing values from population.x, population.y columns
+# into a newly created column called population
+METRICS_POP_RATES <- METRICS_POP_RATES_wrangling %>% 
+                     group_by(Country) %>% 
+                     mutate(population = coalesce(population.x, population.y)) %>% 
+                     select(Country,Lat,Long,date,Confirmed,Recovered,Deaths,year,population)
+METRICS_POP_RATES
+
+missing_countries_pop <- METRICS_POP_RATES %>% 
+  arrange(population) %>% 
+  filter(is.na(population)) %>% 
+  select(Country) %>% 
+  distinct(Country)
+missing_countries_pop
+
+str(METRICS_POP_RATES)
