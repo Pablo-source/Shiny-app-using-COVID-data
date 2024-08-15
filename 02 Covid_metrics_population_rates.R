@@ -295,9 +295,17 @@ write.csv(missing_countries_pop,here("original_data_processed","missing_countrie
 
 # 3.4.1 Create adhoc dataset with population figures from Word bank website
 # https://datatopics.worldbank.org/world-development-indicators/
+# Adding all missing population countries figures to this new data frame below
+Country <-c("Bahamas","Vietnam","Taiwan","Reunion","Congo Brazzaville","Congo Kinshasa","Cruise Ship",
+            "Czechia","Guadeloupe")
+length(Country) 
+# [1] 9
+population <-c(404557,95780000,23600000,861200,5571557,89910000,3711,10670000,395485)
+length(population) 
+# [1] 9
 
-Country <-c("Vietnam","Taiwan")
-population <-c(95780000,23600000)
+## Exclude some duplicated countries (after merging data)
+# "The Bahamas"
 
 Pop_missing_countries <-cbind.data.frame(Country,population)
 str(Pop_missing_countries)
