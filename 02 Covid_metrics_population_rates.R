@@ -170,9 +170,6 @@ POPULATION_Recode <- POPULATION_cleansing %>% select(Country = Country_name,
 names(POPULATION_Recode)
 
 # 3.3 Prior to merging POPULATION and MERTICS files, rename POPULATION contry names so they math METRICS names
-
-Country_name_from_METRICS_file	METRICS	POPULATION_original
-
 #   Country    name_METRICS name_POPULATION
 # 2 Brunei    	Brunei	Brunei Darussalam
 # 3 Cape Verde   	Cape Verde	Cabo Verde
@@ -196,9 +193,9 @@ Country_name_from_METRICS_file	METRICS	POPULATION_original
 # 34 Venezuela	Venezuela	POPULATION country nameVenezuela, RB 28971683
 
 POPULATION_Recode <- as.data.frame(POPULATION_cleansing_subset)
-
 names(POPULATION_Recode)
 str(POPULATION_Recode)
+
 # [1] "Country"    "year"       "population"
 
 # Original POPULATION names
@@ -225,6 +222,7 @@ length(POP_TOMERGE)
 
 
 # 3.3.1 Another option is to use standard recode and case_when() functions
+# New variable Country_names includes matching country names with METRICS data set
 head(POPULATION_Recode)
 POPULATION_Recode$Country_names <- case_when(POPULATION_Recode$Country %in% c("Brunei Darussalam") ~ "Brunei",
                                              POPULATION_Recode$Country %in% c("Cabo Verde") ~ "Cape Verde",
@@ -247,12 +245,6 @@ POPULATION_Recode$Country_names <- case_when(POPULATION_Recode$Country %in% c("B
 POPULATION_Recode_clean <- POPULATION_Recode
 POPULATION_Recode_clean$Country_names[is.na(POPULATION_Recode_clean$Country_names)] <- POPULATION_Recode_clean$Country[is.na(POPULATION_Recode_clean$Country_names)]
 
-
-# Later on Merge POPULATION AND METRIC data frames  
-# METRICS_POP_RATES_checks <- left_join(METRICS,POPULATION_original,
-#                                      by = join_by(Country == Country))
-# METRICS_POP_RATES_checks
-
 # Countries with missing population figures
 # no_pop_countries <- METRICS_POP_RATES_checks %>% 
 #  filter(is.na(population)) %>% 
@@ -260,17 +252,209 @@ POPULATION_Recode_clean$Country_names[is.na(POPULATION_Recode_clean$Country_name
 # no_pop_countries
 # write.csv(no_pop_countries,here("original_data_processed","countries_missing_population_figures.csv"), row.names = TRUE)
 
-# 3.4 MERGE METRICS WITH POPULATION_Recode_clean data frames 
-# At this stage the null values we will obtain for population are 
-
-
-
 # Datasets: 
 #  > METRICS
 #  > POPULATION_Recode_clean
 
 rm(list=ls()[! ls() %in% c("METRICS","POPULATION_Recode_clean")])
 
+## METRICS dataset. Variables ()
+names(METRICS)
+# [1] "Country"   "Lat"       "Long"      "date"      "Confirmed" "Recovered" "Deaths" 
+names(POPULATION_Recode_clean)
+# [1] "Country"       "year"          "population"    "Country_names"
+# keep  "year"          "population"    "Country_names"
 
-METRICS
+# 3.4 MERGE METRICS WITH POPULATION_Recode_clean data frames 
+# At this stage the null values we will obtain for population are 
+# variable Country_names includes matching country names with METRICS data set
 
+METRICS_merge <- METRICS %>% select(Country,Lat,Long,date,Confirmed,Recovered,Deaths)
+POPULATION_merge <- POPULATION_Recode_clean %>% select(Country_names,population)
+
+METRICS_POP_RATES_initial <- left_join(METRICS,POPULATION_Recode_clean,
+                                      by = join_by(Country == Country_names))
+METRICS_POP_RATES_initial
+
+# Check which Countries still have missing population figures
+# sort previous dataset by population using arrange()
+METRICS_POP_RATES_clean <- METRICS_POP_RATES_initial %>% 
+                           select(Country,Lat,Long,date,Confirmed,Recovered,Deaths,year,population)
+                           arrange(population)
+METRICS_POP_RATES_clean
+
+# Get countries list missing population figures
+missing_countries_pop <- METRICS_POP_RATES_initial %>% 
+                         arrange(population) %>% 
+                         filter(is.na(population)) %>% 
+                         select(Country) %>% 
+                         distinct(Country)
+missing_countries_pop
+
+write.csv(missing_countries_pop,here("original_data_processed","missing_countries_pop.csv"), row.names = TRUE)
+
+# 3.4.1 Create adhoc dataset with population figures from Word bank website
+# https://datatopics.worldbank.org/world-development-indicators/
+# Adding all missing population countries figures to this new data frame below
+Country <-c("Bahamas","Congo Brazzaville","Congo Kinshasa","Cruise Ship","Czechia","Guadeloupe",
+            "Guernsey","Holy See","Israel","Jersey","Martinique","Mayottev","Reunion","Taiwan",
+            "Vietnam")
+length(Country) 
+# [1] 15
+population <-c(404557, 5571557,89910000,3711,10670000,395485,62365,604,9050000,96200,
+               372245,270372,861200,23600000,95780000)
+length(population) 
+# [1] 15
+
+## Exclude some duplicated countries (after merging data)
+# "The Bahamas"
+
+Pop_missing_countries <-cbind.data.frame(Country,population)
+str(Pop_missing_countries)
+
+# Turn data.frame into a tibble
+Pop_missing_countries_data <- Pop_missing_countries %>% 
+                              select(Country,population) %>% 
+                              as_tibble()
+
+rm(list=ls()[! ls() %in% c("Pop_missing_countries_data","METRICS_POP_RATES_clean")])
+
+# 3.4.2 Merge METRICS_POP_RATES_clean with Pop_missing_countries dataframe
+METRICS_POP_RATES_wrangling <- left_join(METRICS_POP_RATES_clean,Pop_missing_countries_data,
+                               by = join_by(Country))
+
+# Using new coalesce() function from DPLYR to find the first non-missing element
+# After the merge I want to keep non missing values from population.x, population.y columns
+# into a newly created column called population
+METRICS_POP_RATES_inc_population <- METRICS_POP_RATES_wrangling %>% 
+                     group_by(Country) %>% 
+                     mutate(population = coalesce(population.x, population.y)) %>% 
+                     select(Country,Lat,Long,date,Confirmed,Recovered,Deaths,year,population)
+METRICS_POP_RATES_inc_population
+
+# Check again missing countries
+missing_countries_pop <- METRICS_POP_RATES_inc_population %>% 
+  arrange(population) %>% 
+  filter(is.na(population)) %>% 
+  select(Country) %>% 
+  distinct(Country)
+missing_countries_pop
+
+# It seems only 7 countries still are missing population figures
+# Population (2019)
+# 1 Cabo Verde     577030 
+# 2 French Guiana  285568
+# 3 Mayotte        270372
+# 4 The Bahamas    404557
+# 5 The Gambia     2509000 
+# 6 TimorLeste     1280000
+# 7 Venezuela      28970000
+
+# Repeat previous process 
+Country <-c("Cabo Verde","French Guiana","Mayotte","The Bahamas","The Gambia","TimorLeste","Venezuela")
+length(Country) 
+# [1] 7
+population <-c(577030, 285568,270372,404557,2509000,1280000,28970000)
+length(population) 
+# [1] 7
+# Merge both datasets
+# rm(METRICS_POP_RATES)
+
+remaining_missing_pop_figures <-cbind.data.frame(Country,population)
+str(remaining_missing_pop_figures)
+
+remaining_missing_pop_figures_data <- remaining_missing_pop_figures %>% 
+  select(Country,population) %>% 
+  as_tibble()
+
+
+# 3.4.3 Final merge
+METRICS_POP_RATES_cleansed <- left_join(METRICS_POP_RATES_inc_population,remaining_missing_pop_figures_data,
+                                         by = join_by(Country))
+
+METRICS_POP_RATES_data <- METRICS_POP_RATES_cleansed %>% 
+  group_by(Country) %>% 
+  mutate(population = coalesce(population.x, population.y)) %>% 
+  select(Country,Lat,Long,date,Confirmed,Recovered,Deaths,year,population)
+METRICS_POP_RATES_data
+
+# Check now we have matched all countries with population figures.
+# The code below should return: A tibble 0 * 1 Country [0]
+missing_countries_pop_final <- METRICS_POP_RATES_data %>% 
+  arrange(population) %>% 
+  filter(is.na(population)) %>% 
+  select(Country) %>% 
+  distinct(Country)
+missing_countries_pop_final
+
+rm(list=ls()[! ls() %in% c("METRICS_POP_RATES_data","missing_countries_pop_final")])
+
+
+save.image("~/Documents/Pablo_zorin/Github_Pablo_source_zorin/Shiny-app-using-COVID-data/new_data/METRICS_AND_LEAFLETS_DATA.RData")
+
+# # A tibble: 0 × 1 There is no missing countries, all population figures have been included.
+
+LEAFLET_MAPS_DATA_cleansed <- METRICS_POP_RATES_data
+
+
+# 3.5 COMPUTE RATES
+
+# 3.5.1 Standard rates for each metric (Confirmed, Recovered, Deaths)
+METRICS_POP_RATES <- METRICS_POP_RATES_data %>% 
+  select(Country,date,Confirmed,Recovered,Deaths, year, population) %>% 
+  mutate(
+    CONFR =ceiling(((Confirmed/population)*10000)),
+    RECR = ceiling(((Recovered/population)*10000)),
+    DEATHR =ceiling(((Deaths/population)*10000))
+  )
+
+METRICS_POP_RATES
+
+save.image("~/Documents/Pablo_zorin/Github_Pablo_source_zorin/Shiny-app-using-COVID-data/new_data/METRICS_POP_RATES.RData")
+
+# 3.5.2 # compute rolling average on POPRATESG WITHOUT ANY MISSING VALUE
+library(zoo)
+names(METRICS_POP_RATES)
+#  [1] "Country"    "Lat"        "Long"       "date"       "Confirmed"  "Recovered"  "Deaths"     "year"      
+# [9] "population" "CONFR"      "RECR"       "DEATHR"   
+
+# Keep all previous variables, include 7 days rolling average.
+# Also computed 7 days moving average on daily Confirmed, Recovered and Deaths cases
+METRICS_RATES_DATA_prep <- METRICS_POP_RATES %>%
+  select(Country,date,Confirmed,Recovered,Deaths, year, population,
+         CONFR,RECR,DEATHR) %>% 
+  mutate(
+    Confirmed_7DMA = rollmean(Confirmed, k = 7, fill = NA),
+    Recovered_7DMA = rollmean(Recovered, k = 7, fill = NA),
+    Deaths_7DMA = rollmean(Deaths, k = 7, fill = NA)
+  )
+  
+METRICS_RATES_DATA_final <- METRICS_RATES_DATA_prep %>%
+  group_by(Country) %>%   
+  mutate(CONF_ma07_rates = ceiling(((Confirmed_7DMA/population)*10000)),
+         REC_ma07_rates = ceiling(((Recovered_7DMA/population)*10000)),
+         DEATH_ma07_rates  = ceiling(((Deaths_7DMA/population)*10000))
+  )
+
+METRICS_RATES_DATA_final
+
+# FINAL DATASETS FOR SHINY DASHBOARD
+
+# Keep just these two data frames in our work space at the end of this script 
+# LEAFLET_MAPS_DATA : > This file includes LAT and LONG variables to be used just on the LEAFLET map 
+# METRICS_RATES_DATA : > This file does not include LAT and LONG variables, but it 
+#                   includes POPULATION RATES calculated for Confirmed, Recovered, Deaths metrics. 
+#                   Also this file includes a 7 day rolling average to plot Curves in PLOTLY charts.
+#                   For comparison across countries, we will use this rate for TABLES. 
+
+LEAFLET_MAPS_DATA <- LEAFLET_MAPS_DATA_cleansed
+
+METRICS_POP_RATES_DATA <-   METRICS_RATES_DATA_final
+
+rm(list=ls()[!(ls()%in%c('LEAFLET_MAPS_DATA','METRICS_POP_RATES_DATA'))])
+
+# Save final image to \new_data sub-folder
+save.image("~/Documents/Pablo_zorin/Github_Pablo_source_zorin/Shiny-app-using-COVID-data/new_data/FINAL_SHINY_DATASETS.RData")
+# Save final two datasets as .csv files to \new_data sub-folder
+write.csv(LEAFLET_MAPS_DATA,here("new_data","LEAFLET_MAPS_DATA.csv"), row.names = TRUE)
+write.csv(METRICS_POP_RATES_DATA,here("new_data","METRICS_POP_RATES_DATA.csv"), row.names = TRUE)
