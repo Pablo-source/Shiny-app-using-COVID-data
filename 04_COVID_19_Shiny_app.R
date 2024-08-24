@@ -21,27 +21,35 @@ ui <- dashboardPage(
       # Setting id makes input$tabs give the tabName of currently-selected tab
       id = "tabs",
       menuItem("About", tabName = "about", icon = icon("desktop")),
-      menuItem("Map", tabName = "map", icon = icon("map"))
+      menuItem("COVID-19 Dashboard", tabName = "main_tab", icon = icon("map"))
     )
   )
   ,
   dashboardBody(  
     
     # 1. Start building dashboard content
-    # 1.1 All content from this "map" tab must be enclosed in this tabItems() function:
+    
+    # 1.1 We introduce first this section to build some KPIs at the top of the dashboard:
+    
+    # Infobox: Total figures KPI UK
+    fluidRow(
+      infoBoxOutput("Totalrecovered_UK", width = 3),
+      infoBoxOutput("Totalcases_UK", width = 3),
+      infoBoxOutput("Totaldeaths_UK", width = 3),
+      infoBoxOutput("Date", width = 3)
+      
+    ),
+    
+    # 1.2 All content from this "map" tab must be enclosed in this tabItems() function:
     tabItems(
-      # 1.2 Then individual content of this map tab must be INSIDE this tabItem() function:  
+      # 1.3 Then individual content of this map tab must be INSIDE this tabItem() function:  
       tabItem(
         
         # 1. Building content for map tabName INSIDE the tabItem() function
         # 1.1 Main title for this MAP tab
-        tabName ="map",h2("World map COVID19 deaths by contry"),
-        
-        fluidRow(  box(
-          leafletOutput("map"),
-          p("First map"),
-          width = 12 )
-        ),
+        tabName ="main_tab",h2("World map COVID19 deaths by contry"),
+        # First output is going to be a map, hence I call it "map"
+        fluidRow( box(leafletOutput("map"),p("First map"),   width = 12 )),
         # 2. Adding content to the map tab
         
         # Each tab element goes inside a fluidRow() function
@@ -83,8 +91,30 @@ server <- function(input,output) {
   # prevdailyData (this DATAFRAME comes from PLOT_LEAFLET_MAPS but previous day)
   
   dailyData <- reactive(map_data[map_data$date == format(input$Time_Slider,"%Y/%m/%d"),])
+  prevdailyData <-reactive(map_data[map_data$date == format(input$Time_Slider-1,"%Y/%m/%d"),])
   
-  # OUTPUT 01 "map" 
+  # OUTPUT 01
+  # INFOBOX 01-03 - Total recovered UK 
+  output$Totalrecovered_UK <- renderValueBox({
+    
+    dataframeConf <- dailyData()
+    
+    dataframeConf2 <- dataframeConf %>% 
+      select(country,date,recovered) %>% 
+      filter( country == "Spain")
+
+    valueBox(
+      paste0(
+        
+        format(
+          dataframeConf2$recovered   
+          , big.mark = ',')
+      ), "Recovered | % change prev day | UK", icon = icon("list"),
+      color = "blue"
+    )
+  })
+  
+  # OUTPUT 05 "map"
   output$map = renderLeaflet ({
     
     # This is the new data frame that is modified by "Time_Slider" parameter
