@@ -166,7 +166,7 @@ names(POPULATION_cleansing)
 
 POPULATION_Recode <- POPULATION_cleansing %>% select(Country = Country_name,
                                               year,population)
-
+str(POPULATION_Recode)
 names(POPULATION_Recode)
 
 # 3.3 Prior to merging POPULATION and MERTICS files, rename POPULATION contry names so they math METRICS names
@@ -192,7 +192,6 @@ names(POPULATION_Recode)
 # 33 US	US	POPULATION country nameUnited States 328329953
 # 34 Venezuela	Venezuela	POPULATION country nameVenezuela, RB 28971683
 
-POPULATION_Recode <- as.data.frame(POPULATION_cleansing_subset)
 names(POPULATION_Recode)
 str(POPULATION_Recode)
 
@@ -453,8 +452,114 @@ METRICS_POP_RATES_DATA <-   METRICS_RATES_DATA_final
 
 rm(list=ls()[!(ls()%in%c('LEAFLET_MAPS_DATA','METRICS_POP_RATES_DATA'))])
 
+## I need to address one more issue - When working with Country names variable:
+## - Text to be written must be a length-one character vector.
+
+# 4. Perform aggregation on LEAFLET_MAPS_DATA to ensure only one row per day of data is present
+
+# 4.1 Isolate non-aggregated variables
+nrow(LEAFLET_MAPS_DATA)
+LEAFLET_MAPS_coord <-  LEAFLET_MAPS_DATA %>% 
+                       select(Country,Lat,Long) %>% 
+                       distinct(Country,Lat,Long)
+LEAFLET_MAPS_coord
+nrow(LEAFLET_MAPS_coord)
+
+# IMPORTANT, I NEED A UNIQUE TABLE OT Lat Long for each country, with one row of Lat Long for each country !!!
+# Issue LEAFLET_MAPS_coord INCLUDES several rows per country !!!
+
+# See example below 
+# > LEAFLET_MAPS_coord
+
+# A tibble: 500 × 3
+# Groups:   Country [183]
+# Country               Lat   Long
+#<chr>               <dbl>  <dbl>
+#  1 Afghanistan          33    65   
+# 2 Albania              41.2  20.2 
+# 3 Algeria              28.0   1.66
+# 4 Andorra              42.5   1.52
+# 5 Angola              -11.2  17.9 
+# 6 Antigua and Barbuda  17.1 -61.8 
+# 7 Argentina           -38.4 -63.6 
+# 8 Armenia              40.1  45.0 
+# 9 Australia           -41.5 146.    *
+# 10 Australia           -37.8 145.   *
+
+# 4.1.1 FIXING LAT LONG VALUES:
+# To fix this issue see script: # \Checks\API_Obtain_countries_Lat_long_values.R
+#
+
+# I use an API from # Using {tidygecoder} package to retrieve specific Lat and Long country values
+
+# From the original unique list of countries in LEAFLET_MAPS_DATA data frame:
+LEAFLET_MAPS_country_names  <-  LEAFLET_MAPS_DATA %>% 
+                                select(Country) %>% 
+                                distinct(Country)
+LEAFLET_MAPS_country_names
+write.csv(LEAFLET_MAPS_country_names,here("new_data","LEAFLET_country_names.csv"), row.names = TRUE)
+write.csv(LEAFLET_MAPS_country_names,here("Checks","LEAFLET_country_names.csv"), row.names = TRUE)
+
+
+
+
+
+# 4.2 Then I will aggregate cases just by day
+
+# 4.2.1 Confirmed cases 
+# Input Data frame: LEAFLET_MAPS_DATA (Confirmed)
+
+# This will aggregate all Confirmed cases by day. Obtaining just one row per day
+LEAFLET_MAP_conf_DAILY <- LEAFLET_MAPS_DATA %>% 
+  select(Country,Lat,Long,date,Confirmed,year) %>% 
+  group_by(Country,date) %>%
+  summarise(Confirmed_d = sum(Confirmed))
+LEAFLET_MAP_conf_DAILY
+
+nrow(LEAFLET_MAP_conf_DAILY)
+# Then we merge them 
+LEAFLET_MAPS_FINAL <- left_join(LEAFLET_MAP_conf_DAILY,
+                                LEAFLET_MAPS_coord,
+                                by = join_by(Country))
+
+# 4.2.1 Recovered cases 
+# Input Data frame: LEAFLET_MAPS_DATA (Recovered)
+LEAFLET_MAP_recovered_DAILY <- LEAFLET_MAPS_DATA %>% 
+  select(Country,Lat,Long,date,Recovered,year) %>% 
+  group_by(Country,date) %>%
+  summarise(Recovered_d = sum(Recovered))
+LEAFLET_MAP_recovered_DAILY
+
+# 4.2.1 Deaths cases 
+# Input Data frame: LEAFLET_MAPS_DATA (Deaths)
+LEAFLET_MAP_deaths_DAILY <- LEAFLET_MAPS_DATA %>% 
+  select(Country,Lat,Long,date,Deaths,year) %>% 
+  group_by(Country,date) %>%
+  summarise(Deaths_d = sum(Deaths))
+LEAFLET_MAP_deaths_DAILY
+
+
+
+
+# Using some regex expression to fix it
+# gsub() for pattern matching and replacement.
+LEAFLET_MAPS_DATA_FINAL <- LEAFLET_MAPS_DATA %>% mutate(Country_map = gsub(" ","",Country))
+METRICS_POP_RATES_DATA_FINAL <- METRICS_POP_RATES_DATA %>% mutate(Country_filter = gsub(" ","_",Country))
+  
+# unique(LEAFLET_MAPS_DATA_FINAL$Country)
+# unique(METRICS_POP_RATES_DATA_FINAL$Country)
+
+rm(list=ls()[!(ls()%in%c('LEAFLET_MAPS_DATA_FINAL','METRICS_POP_RATES_DATA_FINAL'))])
+
+LEAFLET_MAPS_DATAF <- LEAFLET_MAPS_DATA_FINAL
+METRICS_POP_RATES_DATAF <- METRICS_POP_RATES_DATA_FINAL
+
 # Save final image to \new_data sub-folder
 save.image("~/Documents/Pablo_zorin/Github_Pablo_source_zorin/Shiny-app-using-COVID-data/new_data/FINAL_SHINY_DATASETS.RData")
+
 # Save final two datasets as .csv files to \new_data sub-folder
-write.csv(LEAFLET_MAPS_DATA,here("new_data","LEAFLET_MAPS_DATA.csv"), row.names = TRUE)
-write.csv(METRICS_POP_RATES_DATA,here("new_data","METRICS_POP_RATES_DATA.csv"), row.names = TRUE)
+write.csv(LEAFLET_MAPS_DATA_FINAL,here("new_data","LEAFLET_MAPS_DATA.csv"), row.names = TRUE)
+write.csv(METRICS_POP_RATES_DATA_FINAL,here("new_data","METRICS_POP_RATES_DATA.csv"), row.names = TRUE)
+
+# Note: In Shiny some filters and drop down menus only work with "legth-one character", meaning I can't use
+#       two word countries. Replacing spacpes by hyphons.

@@ -100,8 +100,8 @@ server <- function(input,output) {
     dataframeConf <- dailyData()
     
     dataframeConf2 <- dataframeConf %>% 
-      select(country,date,recovered) %>% 
-      filter( country == "Spain")
+      select(country_map,date,recovered) %>% 
+      filter( country_map == "UnitedKingdom")
 
     valueBox(
       paste0(
