@@ -488,10 +488,7 @@ nrow(LEAFLET_MAPS_coord)
 
 # 4.1.1 FIXING LAT LONG VALUES:
 # To fix this issue see script: # \Checks\API_Obtain_countries_Lat_long_values.R
-#
-
 # I use an API from # Using {tidygecoder} package to retrieve specific Lat and Long country values
-
 # From the original unique list of countries in LEAFLET_MAPS_DATA data frame:
 LEAFLET_MAPS_country_names  <-  LEAFLET_MAPS_DATA %>% 
                                 select(Country) %>% 
@@ -500,7 +497,7 @@ LEAFLET_MAPS_country_names
 write.csv(LEAFLET_MAPS_country_names,here("new_data","LEAFLET_country_names.csv"), row.names = TRUE)
 write.csv(LEAFLET_MAPS_country_names,here("Checks","LEAFLET_country_names.csv"), row.names = TRUE)
 
-
+# 
 
 
 
@@ -517,10 +514,6 @@ LEAFLET_MAP_conf_DAILY <- LEAFLET_MAPS_DATA %>%
 LEAFLET_MAP_conf_DAILY
 
 nrow(LEAFLET_MAP_conf_DAILY)
-# Then we merge them 
-LEAFLET_MAPS_FINAL <- left_join(LEAFLET_MAP_conf_DAILY,
-                                LEAFLET_MAPS_coord,
-                                by = join_by(Country))
 
 # 4.2.1 Recovered cases 
 # Input Data frame: LEAFLET_MAPS_DATA (Recovered)
@@ -538,14 +531,41 @@ LEAFLET_MAP_deaths_DAILY <- LEAFLET_MAPS_DATA %>%
   summarise(Deaths_d = sum(Deaths))
 LEAFLET_MAP_deaths_DAILY
 
+# Then we merge them 
+LEAFLET_MAPS_FINAL_daily_recovered <- left_join(LEAFLET_MAP_conf_DAILY,
+                                LEAFLET_MAP_recovered_DAILY,
+                                by = join_by(Country,date))
+
+LEAFLET_MAPS_FINAL_daily_recovered_deaths <- left_join(LEAFLET_MAPS_FINAL_daily_recovered,
+                                LEAFLET_MAP_deaths_DAILY,
+                                by = join_by(Country,date))
+
+LEAFLET_MAPS_DATA <- LEAFLET_MAPS_FINAL_daily_recovered_deaths
 
 
+# 5. THEN MERGE IT WITH LAT LONG DATA 
+LEAFLET_MAPS_DATA
+
+# Load new data created
+ALL_COUNTRIES_LAT_LONG_merge <-read.table(here("new_data", "ALL_COUNTRIES_LAT_LONG.csv"),header =TRUE, sep =',',stringsAsFactors =TRUE) %>% clean_names() 
+ALL_COUNTRIES_LAT_LONG_merge
+
+ALL_COUNTRIES_LAT_LONG_to_merve <- ALL_COUNTRIES_LAT_LONG_merge %>% select(Country = address,
+                                                                           lat,long)
+# LEAFLET_MAPS_DATA with LAT LONG
+LEAFLET_DATA_LAT_LONG <-   left_join(LEAFLET_MAPS_DATA,
+                                     ALL_COUNTRIES_LAT_LONG_to_merve,
+                                     by = join_by(Country))
+                                     
+LEAFLET_DATA_LAT_LONG
 
 # Using some regex expression to fix it
 # gsub() for pattern matching and replacement.
-LEAFLET_MAPS_DATA_FINAL <- LEAFLET_MAPS_DATA %>% mutate(Country_map = gsub(" ","",Country))
+LEAFLET_MAPS_DATA_FINAL <- LEAFLET_DATA_LAT_LONG %>% mutate(Country_map = gsub(" ","",Country))
 METRICS_POP_RATES_DATA_FINAL <- METRICS_POP_RATES_DATA %>% mutate(Country_filter = gsub(" ","_",Country))
   
+
+
 # unique(LEAFLET_MAPS_DATA_FINAL$Country)
 # unique(METRICS_POP_RATES_DATA_FINAL$Country)
 

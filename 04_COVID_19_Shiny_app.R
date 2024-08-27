@@ -100,14 +100,14 @@ server <- function(input,output) {
     dataframeConf <- dailyData()
     
     dataframeConf2 <- dataframeConf %>% 
-      select(country_map,date,recovered) %>% 
+      select(country_map,date,recovered_d) %>% 
       filter( country_map == "UnitedKingdom")
 
     valueBox(
       paste0(
         
         format(
-          dataframeConf2$recovered   
+          dataframeConf2$recovered_d   
           , big.mark = ',')
       ), "Recovered | % change prev day | UK", icon = icon("list"),
       color = "blue"
@@ -121,7 +121,7 @@ server <- function(input,output) {
     # We input now this dataframe into the LEAFLEFT function
     dataframe <- dailyData()
     
-    pal_sb <- colorNumeric("Greens",domain = dataframe$deaths)    
+    pal_sb <- colorNumeric("Greens",domain = dataframe$deaths_d)    
     
     # If filter date is disables the map is displayed !!
     #   filter(date == input$date[1]) %>%   
@@ -132,13 +132,13 @@ server <- function(input,output) {
       addCircles(lng = ~ long, 
                  lat = ~lat,
                  weight = 5, 
-                 radius = ~sqrt(dataframe$deaths)*1000,
+                 radius = ~sqrt(dataframe$deaths_d)*1000,
                  
                  popup = paste0(
                    "<b>Country:  </b>",dataframe$country,' ',dataframe$date,
-                   "<br>Confirmed=",dataframe$confirmed,
-                   "<br>Deaths=",dataframe$deaths,
-                   "<br>Recovered=",dataframe$recovered,
+                   "<br>Confirmed=",dataframe$confirmed_d,
+                   "<br>Deaths=",dataframe$deaths_d,
+                   "<br>Recovered=",dataframe$recovered_d,
                    sep = " "
                    
                  ),

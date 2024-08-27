@@ -17,16 +17,14 @@ map_data_prep  <-read.table(here("new_data", "LEAFLET_MAPS_DATA.csv"),
 map_data_prep
 
 str(map_data_prep)
-
-
 library(lubridate)
+
 # 2. Transform initial date variable defined as Factor into a standard R date using as.Date() function.
 map_data <- map_data_prep %>% 
   select(!c("x")) %>% 
   mutate(date = as.Date(date) )
 map_data    
-str(map_data)
-
+names(map_data)
 
 # METRICS_POP_RATES_DATA.csv
 

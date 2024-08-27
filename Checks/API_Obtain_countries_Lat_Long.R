@@ -11,11 +11,10 @@
 # The geocode() and geo() functions are for forward geocoding 
 
 # 1. Install and load required libraries
+# This is a package to obtain Lat Long values for each individual country. Based on their centroids. 
+# install.packages('tidygeocoder')
 
 library(tidyverse)
-
-# This is a package to obtain Lat Long values for each individual country. Based on their centroids. 
-install.packages('tidygeocoder')
 library(tidygeocoder)
 
 # 1. Example on how to use geo() function to obtain Lat and Long values Using geo_limit
@@ -153,10 +152,92 @@ geocoding_lat_long_32_41_subset
 
 write.csv(geocoding_lat_long_32_41_subset,here("new_data","Countries_lat_Long_values_32_41.csv"), row.names = TRUE)
 
+# 2.1.5 Next 31 countries
+# 42-72 - SHIFT + 2 > Enclose word in double quotes
+forty_one_seventy_two <-c("Cuba","Cyprus","Czechia","Denmark","Djibouti","Dominica","Dominican Republic","East Timor","Ecuador",
+                          "Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia","Fiji","Finland",
+                          "France","French Guiana","Gabon","Gambia The","Georgia","Germany","Ghana","Greece","Greenland","Grenada",
+                          "Guadeloupe","Guam","Guatemala")
+length(forty_one_seventy_two)
+# 31
+lat_long_42_72 <- geo(forty_one_seventy_two,  method = "osm",  limit = 3, full_results = TRUE)
+geocoding_lat_long_42_71 <- lat_long_42_72 %>% select(address,lat,long,addresstype) %>% filter(addresstype == "country")
+geocoding_lat_long_42_71_all <- geocoding_lat_long_42_71
+write.csv(geocoding_lat_long_42_71,here("new_data","Countries_lat_Long_values_42_72.csv"), row.names = TRUE)
+
+# 2.1.6 Next 31 countries
+# 73-104 - SHIFT + 2 > Enclose word in double quotes
+seventy_three_hundred_four <-c("Guernsey","Guinea","Guyana","Haiti","Holy See","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy",
+                               "Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Korea South","Kosovo","Kuwait","Kyrgyzstan","Latvia","Lebanon","Liberia",
+                               "Liechtenstein","Lithuania","Luxembourg","Madagascar")
+length(seventy_three_hundred_four)
+# [1] 32
+lat_long_73_104 <- geo(seventy_three_hundred_four,  method = "osm",  limit = 3, full_results = TRUE)
+geocoding_lat_long_73_104 <- lat_long_73_104 %>% select(address,lat,long,addresstype) %>% filter(addresstype == "country")
+geocoding_lat_long_73_104_all <- geocoding_lat_long_73_104
+write.csv(geocoding_lat_long_73_104_all,here("new_data","Countries_lat_Long_values_73_104.csv"), row.names = TRUE)
+length(geocoding_lat_long_73_104_all)
+
+# 2.1.7 Next 31 countries
+# 105-136 - SHIFT + 2 > Enclose word in double quotes
+hundred_five_hundred_thirty_six <-c("Malaysia","Maldives","Malta","Martinique","Mauritania","Mauritius","Mayotte","Mexico","Moldova","Monaco","Mongolia",
+                                    "Montenegro","Morocco","Mozambique","Namibia","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria",
+                                    "North Macedonia","Norway","Oman","Pakistan","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal")
+length(hundred_five_hundred_thirty_six)
+lat_long_105_136 <- geo(hundred_five_hundred_thirty_six,  method = "osm",  limit = 3, full_results = TRUE)
+geocoding_lat_long_105_136 <- lat_long_105_136 %>% select(address,lat,long,addresstype) %>% filter(addresstype == "country")
+geocoding_lat_long_105_136_all <- geocoding_lat_long_105_136
+write.csv(geocoding_lat_long_105_136_all,here("new_data","Countries_lat_Long_values_105_136.csv"), row.names = TRUE)
+length(geocoding_lat_long_105_136_all)
+
+
+# 2.1.8 Final_set_of_countries
+# 137-183 - SHIFT + 2 > Enclose word in double quotes
+hundred_thirty_seven_final <-c("Puerto Rico","Qatar","Republic of the Congo","Reunion","Romania","Russia","Rwanda","Saint Lucia","Saint Vincent and the Grenadines",
+"San Marino","Saudi Arabia","Senegal","Serbia","Seychelles","Singapore","Slovakia","Slovenia","Somalia","South Africa","Spain","Sri Lanka","Sudan","Suriname","Sweden","Switzerland",
+"Syria","Taiwan","Tanzania","Thailand","The Bahamas","The Gambia","TimorLeste","Togo","Trinidad and Tobago","Tunisia","Turkey","US","Uganda","Ukraine","United Arab Emirates","United Kingdom",
+"Uruguay","Uzbekistan","Venezuela","Vietnam","Zambia","Zimbabwe")
+
+length(hundred_thirty_seven_final)
+lat_long_137_183 <- geo(hundred_thirty_seven_final,  method = "osm",  limit = 3, full_results = TRUE)
+geocoding_lat_long_137_183 <- lat_long_137_183 %>% select(address,lat,long,addresstype) %>% filter(addresstype == "country")
+geocoding_lat_long_137_183_all <- geocoding_lat_long_137_183
+write.csv(geocoding_lat_long_137_183_all,here("new_data","Countries_lat_Long_values_137_183_ALL.csv"), row.names = TRUE)
+length(geocoding_lat_long_137_183_all)
 
 ## FINAL FILE WITH LAT LONG FOR ALL COUNTRIES FROM LEAFLETS_MAPS file
-COUNTRIES_LAT_LONG_FILE <- bind_rows(geocoding_lat_long_01_10_all, geocoding_lat_long_11_20_all,geocoding_lat_long_21_31_all,
-                                     geocoding_lat_long_32_41_subset)
+LOAD_geocoding_lat_long_01_10 <-read.table(here("new_data", "Countries_lat_Long_values_01_10.csv"),header =TRUE, sep =',',stringsAsFactors =TRUE) %>% clean_names() 
+LOAD_geocoding_lat_long_11_20 <-read.table(here("new_data", "Countries_lat_Long_values_11_20.csv"),header =TRUE, sep =',',stringsAsFactors =TRUE) %>% clean_names() 
+LOAD_geocoding_lat_long_21_31 <-read.table(here("new_data", "Countries_lat_Long_values_21_31.csv"),header =TRUE, sep =',',stringsAsFactors =TRUE) %>% clean_names() 
+LOAD_geocoding_lat_long_32_41 <-read.table(here("new_data", "Countries_lat_Long_values_32_41.csv"),header =TRUE, sep =',',stringsAsFactors =TRUE) %>% clean_names() 
+LOAD_geocoding_lat_long_42_72 <-read.table(here("new_data", "Countries_lat_Long_values_42_72.csv"),header =TRUE, sep =',',stringsAsFactors =TRUE) %>% clean_names() 
+LOAD_geocoding_lat_long_73_104 <-read.table(here("new_data", "Countries_lat_Long_values_73_104.csv"),header =TRUE, sep =',',stringsAsFactors =TRUE) %>% clean_names()
+LOAD_geocoding_lat_long_105_136 <-read.table(here("new_data", "Countries_lat_Long_values_105_136.csv"),header =TRUE, sep =',',stringsAsFactors =TRUE) %>% clean_names()
+LOAD_geocoding_lat_long_137_183_ALL <-read.table(here("new_data", "Countries_lat_Long_values_137_183_ALL.csv"),header =TRUE, sep =',',stringsAsFactors =TRUE) %>% clean_names()
+
+
+# FINAL DATASET INCLUDING ALL COUNTRIES LAT LONG VALUES 
+# bind_rows(): this is the verb to append ANY datasets. 
+COUNTRIES_LAT_LONG_FINAL <- LOAD_geocoding_lat_long_01_10 %>% 
+                                          bind_rows(LOAD_geocoding_lat_long_11_20) %>% 
+                                          bind_rows(LOAD_geocoding_lat_long_21_31) %>% 
+                                          bind_rows(LOAD_geocoding_lat_long_32_41) %>% 
+                                          bind_rows(LOAD_geocoding_lat_long_42_72) %>%
+                                          bind_rows(LOAD_geocoding_lat_long_105_136) %>%
+                                          bind_rows(LOAD_geocoding_lat_long_137_183_ALL)
+COUNTRIES_LAT_LONG_FINAL
+
+ALL_COUNTRIES_LAT_LONG <- COUNTRIES_LAT_LONG_FINAL
+
+write.csv(ALL_COUNTRIES_LAT_LONG,here("new_data","ALL_COUNTRIES_LAT_LONG.csv"), row.names = TRUE)
+
+# Load new data created
+ALL_COUNTRIES_LAT_LONG_merge <-read.table(here("new_data", "ALL_COUNTRIES_LAT_LONG.csv"),header =TRUE, sep =',',stringsAsFactors =TRUE) %>% clean_names() 
+ALL_COUNTRIES_LAT_LONG_merge
+
+ALL_COUNTRIES_LAT_LONG_to_merve <- ALL_COUNTRIES_LAT_LONG_merge %>% select(Country = address,
+                                                                           lat,long)
+
 
 
 # CHECKS 
