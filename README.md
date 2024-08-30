@@ -41,9 +41,9 @@ These three files are the COVID indicators used in the Shiny app: new, deaths an
 - *Plots tab using Potly interactive library*
 ![Plot tab PLOTLY interactive plots](https://user-images.githubusercontent.com/76554081/192869436-b413e6e0-a8fd-4310-b5a7-5bd8cf833278.png)
 
-## Shiny app-re-design
+## Shiny app re-design
 
-I have started to introduce some changes in the existing Shiny app design. Both in the back end and app design: 
+On **August 2024**, I have started to introduce some changes in the existing Shiny app design. Both in the back end and app design: 
 
 Back end:
 -   Define new functions to download data from CSSEGIS github repo: https://github.com/CSSEGISandData/COVID-19
