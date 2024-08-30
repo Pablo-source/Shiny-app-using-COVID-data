@@ -40,3 +40,14 @@ These three files are the COVID indicators used in the Shiny app: new, deaths an
 
 - *Plots tab using Potly interactive library*
 ![Plot tab PLOTLY interactive plots](https://user-images.githubusercontent.com/76554081/192869436-b413e6e0-a8fd-4310-b5a7-5bd8cf833278.png)
+
+## Shiny app-re-design
+
+I have started to introduce some changes in the existing Shiny app design.  Among other changes I have included: 
+
+- With {tidygeocoder} package, used geo() function to conduct specific calls to the API to retrieve Lat and Long values. Using batches of 10 up to 50 countries to test the API response time. It worked fine.
+
+This is still an ongoing re-design of this shiny app that will be completed in coming weeks
+
+![image](https://github.com/user-attachments/assets/2f94c1e9-fde2-4385-ad03-989776b81e99)
+
