@@ -44,9 +44,11 @@ These three files are the COVID indicators used in the Shiny app: new, deaths an
 ## Shiny app-re-design
 
 I have started to introduce some changes in the existing Shiny app design. Both in the back end and app design: 
+
 Back end:
 -   Define new functions to download data from CSSEGIS github repo: https://github.com/CSSEGISandData/COVID-19
 -   With {tidygeocoder} package, used geo() function to conduct specific calls to the API to retrieve Lat and Long values. Using batches of 10 up to 50 countries to test the API response time. It worked fine.
+
 Front end:
 - Re-designing Shiny app into a single tab combining all previous charts and plots. I will change slightly the existing charts.
 - I will incorporate new chart types in this new dashboard version
