@@ -33,12 +33,13 @@ ui <- dashboardPage(
     
     # Infobox: Total figures KPI UK
     fluidRow(
-      infoBoxOutput("Confirmed_cases_UK", width = 3),
-      infoBoxOutput("Recovered_cases_UK", width = 3),
-      infoBoxOutput("Death_cases_UK", width = 3),
+      infoBoxOutput("Today_cases_UK", width = 3),
+      infoBoxOutput("Yesterday_cases_UK", width = 3),
+      infoBoxOutput("Difference_TY_UK", width = 3),
       infoBoxOutput("Date", width = 3)
       
     ),
+    
     
     # 1.2 All content from this "map" tab must be enclosed in this tabItems() function:
     tabItems(
@@ -47,13 +48,9 @@ ui <- dashboardPage(
         
         # 1. Building content for map tabName INSIDE the tabItem() function
         # 1.1 Main title for this MAP tab
-        tabName ="main_tab",
-            h2("World map COVID19 deaths by contry -hover over dots for country info"),
-        
-        
-        
+        tabName ="main_tab",h2("World map COVID19 deaths by contry"),
         # First output is going to be a map, hence I call it "map"
-        fluidRow( box(leafletOutput("map"),p("Map displaying COVID-19 confirmed,recovered and deaths cases"),   width = 12 )),
+        fluidRow( box(leafletOutput("map"),p("First map"),   width = 12 )),
         # 2. Adding content to the map tab
         
         # Each tab element goes inside a fluidRow() function
@@ -95,133 +92,84 @@ server <- function(input,output) {
   # prevdailyData (this DATAFRAME comes from PLOT_LEAFLET_MAPS but previous day)
   
   dailyData <- reactive(map_data[map_data$date == format(input$Time_Slider,"%Y/%m/%d"),])
-    prevDay <- reactive(map_data[map_data$date == format(input$Time_Slider-1,"%Y/%m/%d"),])
+  prevDay<- reactive(map_data[map_data$date == format(input$Time_Slider-1,"%Y/%m/%d"),])
   
-  # Metrics: confirmed_d, recovered_d, deaths_d
-  
-  # FIRST DASHBOARD SECTION - KPIs
-      
-  # KPI 01 - Total confirmed cases - KPI 1-4
-  # Daily values and difference between today vs yesterday values
-  # Variable: confirmed_d
-  output$Confirmed_cases_UK <- renderValueBox({
-      
-      prevday_conf <- prevDay()
-      prevday_conf2 <- prevday_conf %>%
-        select(country_map,date,confirmed_d) %>%
-        filter( country_map == "UnitedKingdom")
-      
-      day_conf <- dailyData()
-      day_conf2 <- day_conf %>%
-        select(country_map,date,confirmed_d) %>%
-        filter( country_map == "UnitedKingdom")
-      
-      valueBox(paste0(
-        # Main figure dispplays daily confirmed cases
-        format(day_conf2$confirmed_d, big.mark = ','),
-        
-        # Percentage change from previous day
-        paste0("[",
-               round(
-                 (
-                   (day_conf2$confirmed_d-prevday_conf2$confirmed_d)/
-                     prevday_conf2$confirmed_d
-                 )*100
-                 ,1),"%"
-               ,"]")
-      ), "Confirmed | % change prev day | UK", icon = icon("list"),
-      color = "blue")
-      
+  # OUTPUT 01 - INFOBOX 01-03 - Today UK recovered cases
+  output$Today_cases_UK <- renderValueBox({
     
-    })
-    
-    
-  # KPI 02 - Total recovered cases  - KPI 2-4
-  # Daily values and difference between today vs yesterday values
-  # Variable: recovered_d
-  output$Recovered_cases_UK <- renderValueBox({
-    
-    prevday_rec <- prevDay()
-    prevday_rec2 <- prevday_rec %>%
+    dataframeRec <- dailyData()
+    dataframeRec2 <- dataframeRec %>%
       select(country_map,date,recovered_d) %>%
       filter( country_map == "UnitedKingdom")
     
-    day_rec <- dailyData()
-    day_rec2 <- day_rec %>%
+    valueBox(paste0(format(
+      dataframeRec2$recovered_d, big.mark = ',')
+    ), "Recovered| UK", icon = icon("list"),color = "blue")
+  })
+  # OUTPUT 02 - Infobox 02-03 - Yesterday's confirmed cases
+  # Variable: confirmed_d
+  output$Yesterday_cases_UK <- renderValueBox({
+    
+    prevdayRec <- prevDay()
+    prevdayRec2 <- prevdayRec %>%
+      select(country_map,date,recovered_d) %>%
+      filter( country_map == "UnitedKingdom")
+    
+    valueBox(paste0(format(
+      prevdayRec2$recovered_d  
+      
+      , big.mark = ',')
+    ), "Recovered prev day | UK", icon = icon("list"),color = "purple"
+    )
+  })
+  
+  # OUTPUT 03 - Difference today vs yesterday values
+  output$Difference_TY_UK <- renderValueBox({
+    
+    prevday <- prevDay()
+    prevday2 <- prevday %>%
+      select(country_map,date,recovered_d) %>%
+      filter( country_map == "UnitedKingdom")
+    
+    dataframeRec <- dailyData()
+    dataframeRec2 <- dataframeRec %>%
       select(country_map,date,recovered_d) %>%
       filter( country_map == "UnitedKingdom")
     
     valueBox(paste0(
-      # Main figure dispplays daily confirmed cases
-      format(day_rec2$recovered_d, big.mark = ','),
       
-      # Percentage change from previous day
+      format(prevday2$recovered_d, big.mark = ','),
+      
+      format(dataframeRec2$recovered_d, big.mark = ','),
+      
+      ## This code below works fine !!
+      ##  paste0("[",dataframeRec2$recovered_d-prevdayDiff2$recovered_d,"]")
       paste0("[",
              round(
                (
-                 (day_rec2$recovered_d-prevday_rec2$recovered_d)/
-                   prevday_rec2$recovered_d
+                 (dataframeRec2$recovered_d-prevday2$recovered_d)/
+                   prevday2$recovered_d
                )*100
                ,1),"%"
              ,"]")
-    ), "Recovered | % change prev day | UK", icon = icon("check"),
-    color = "green")
+    ),"% difference prev current day")
     
     
   })
   
-  # KPI 03 - Total death cases - KPI 3-4
-  # Daily values and difference between today vs yesterday values
-  # Variable: deaths_d
   
-  output$Death_cases_UK <- renderValueBox({
-    
-    Cases <- dailyData()
-    Cases2 <- Cases %>% 
-      select(country_map,date,confirmed_d) %>% 
-      filter( country_map == "UnitedKingdom")
-    
-    Casesprev <- prevDay() 
-    Casesprev2 <- Casesprev %>% 
-      select(country_map,date,confirmed_d) %>% 
-      filter(country_map =="United Kingdom")
-    
-    valueBox(paste0(
-      format(Cases2$confirmed_d, big.mark = ','),
-      paste0("[",
-             round(
-               (
-                 (Cases2$confirmed_d - Casesprev2$confirmed_d)/
-                   Casesprev2$confirmed_d
-               )*100,1)
-             ,"%","]")
-    ), "Deaths | % change prev day | UK", icon = icon("user-doctor"),
-    color = "orange"
-    )
-    
-    
-  })
-  
-  # KPI 04 - Total death cases - KPI 4-4
-  # DATE
+  # OUTPUT 04 - Infobox 03-03 - Date
   # Variable: date
   output$Date   <- renderValueBox({
-    
-    Datebox <- dailyData()
-    Datebox2 <- Datebox %>% 
-      select(country_map,date,recovered_d) %>% 
+    dataframeDate <- dailyData()
+    dataframeDate <- dataframeDate %>%
+      select(country_map,date,recovered_d) %>%
       filter( country_map == "UnitedKingdom")
-    
-    valueBox(Datebox2$date,
-      "Date | Daily figures",
-      icon = icon("calendar"),color = "yellow")
-    
+    valueBox(dataframeDate$date,
+             "Date | Daily figures",
+             icon = icon("calendar"),color = "yellow")
   })
-  
-  
-  
-  
-  
+
   # OUTPUT 05 "map"
   output$map = renderLeaflet ({
     
