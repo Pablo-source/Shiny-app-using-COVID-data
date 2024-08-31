@@ -58,5 +58,6 @@ Front end:
 
 This is still an ongoing re-design of this shiny app that will be completed in coming weeks
 
-![image](https://github.com/user-attachments/assets/2f94c1e9-fde2-4385-ad03-989776b81e99)
+![image](https://github.com/user-attachments/assets/ef6b2d2f-6349-4cc4-8a7a-662da08565f0)
+
 
