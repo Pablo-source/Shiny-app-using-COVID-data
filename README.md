@@ -47,7 +47,9 @@ On **August 2024**, I have started to introduce some changes in the existing Shi
 
 Back end:
 -   Define new functions to download data from CSSEGIS github repo: https://github.com/CSSEGISandData/COVID-19
+https://github.com/Pablo-source/Shiny-app-using-COVID-data/blob/main/00_Initial_data_download.R
 -   With {tidygeocoder} package, used geo() function to conduct specific calls to the API to retrieve Lat and Long values. Using batches of 10 up to 50 countries to test the API response time. It worked fine.
+
 
 Front end:
 - Re-designing Shiny app into a single tab combining all previous charts and plots. I will change slightly the existing charts.
