@@ -48,7 +48,8 @@ On **August 2024**, I have started to introduce some changes in the existing Shi
 Back end:
 -   Define new functions to download data from CSSEGIS github repo: https://github.com/CSSEGISandData/COVID-19
 https://github.com/Pablo-source/Shiny-app-using-COVID-data/blob/main/00_Initial_data_download.R
--   With {tidygeocoder} package, used geo() function to conduct specific calls to the API to retrieve Lat and Long values. Using batches of 10 up to 50 countries to test the API response time. It worked fine.
+-   From {tidygeocoder} package, use geo() function to conduct specific calls to the API to retrieve Lat and Long values. Using batches of 10 up to 50 countries to test the API response time. It worked fine.
+https://github.com/Pablo-source/Shiny-app-using-COVID-data/blob/main/Checks/API_Obtain_countries_Lat_Long.R
 
 
 Front end:
