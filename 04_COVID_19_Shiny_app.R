@@ -75,13 +75,11 @@ ui <- dashboardPage(
             class = "slider",
             width = 15,
           )
+        ),
+        fluidRow(
+          box(
+            dataTableOutput("sitreptable"), width = 15))
         )
-        
-        
-        
-        
-        
-      )
     )
   )
 ) 
@@ -96,7 +94,9 @@ server <- function(input,output) {
   
   dailyData <- reactive(map_data[map_data$date == format(input$Time_Slider,"%Y/%m/%d"),])
     prevDay <- reactive(map_data[map_data$date == format(input$Time_Slider-1,"%Y/%m/%d"),])
-  
+  ## New dataset for table
+    RATESTable <- reactive(metrics_rates[metrics_rates$date == format(input$Time_Slider,"%Y/%m/%d"),])
+    
   # Metrics: confirmed_d, recovered_d, deaths_d
   
   # FIRST DASHBOARD SECTION - KPIs
@@ -141,15 +141,16 @@ server <- function(input,output) {
   # Variable: recovered_d
   output$Recovered_cases_UK <- renderValueBox({
     
+    day_rec <- dailyData()
+    day_rec2 <- day_rec %>%
+      select(country_map,date,recovered_d) %>%
+      filter( country_map == "UnitedKingdom")
+    
     prevday_rec <- prevDay()
     prevday_rec2 <- prevday_rec %>%
       select(country_map,date,recovered_d) %>%
       filter( country_map == "UnitedKingdom")
     
-    day_rec <- dailyData()
-    day_rec2 <- day_rec %>%
-      select(country_map,date,recovered_d) %>%
-      filter( country_map == "UnitedKingdom")
     
     valueBox(paste0(
       # Main figure dispplays daily confirmed cases
@@ -176,25 +177,26 @@ server <- function(input,output) {
   
   output$Death_cases_UK <- renderValueBox({
     
-    Cases <- dailyData()
-    Cases2 <- Cases %>% 
-      select(country_map,date,confirmed_d) %>% 
+    DeathCases <- dailyData()
+    DeathCases2 <- DeathCases %>% 
+      select(country_map,date,deaths_d) %>% 
       filter( country_map == "UnitedKingdom")
     
-    Casesprev <- prevDay() 
-    Casesprev2 <- Casesprev %>% 
-      select(country_map,date,confirmed_d) %>% 
+    DeathCasesprev <- prevDay() 
+    DeathCasesprev2 <- DeathCasesprev %>% 
+      select(country_map,date,deaths_d) %>% 
       filter(country_map =="United Kingdom")
     
     valueBox(paste0(
-      format(Cases2$confirmed_d, big.mark = ','),
+      format(DeathCases2$deaths_d, big.mark = ','),
       paste0("[",
              round(
                (
-                 (Cases2$confirmed_d - Casesprev2$confirmed_d)/
-                   Casesprev2$confirmed_d
-               )*100,1)
-             ,"%","]")
+                 (DeathCases2$deaths_d - DeathCasesprev2$deaths_d)/
+                   DeathCasesprev2$deaths_d
+               )*100
+               ,1),"%"
+             ,"]")
     ), "Deaths | % change prev day | UK", icon = icon("user-doctor"),
     color = "orange"
     )
@@ -202,7 +204,7 @@ server <- function(input,output) {
     
   })
   
-  # KPI 04 - Total death cases - KPI 4-4
+  # KPI 04 - Date - KPI 4-4
   # DATE
   # Variable: date
   output$Date   <- renderValueBox({
@@ -257,6 +259,18 @@ server <- function(input,output) {
       )
   })
   
+  # Output 06 "data table" 
+  # population)*10000
+  output$sitreptable <- renderDataTable({Tabledesc <- RATESTable()
+  Tabledesc  %>%
+    select(country, date, confirmed,recovered,deaths,population,
+           conf_7Days_moving_avg = confirmed_7dma, 
+           rec_7Days_moving_avg= recovered_7dma, 
+           deaths_7Days_moving_avg=deaths_7dma,
+           'conf_x10,000pop_rate' = conf_ma07_rates,
+           'rec_x10,000pop_rate' = rec_ma07_rates,
+           'deaths_x10,000pop_rate' = death_ma07_rates) %>% 
+    arrange(desc(confirmed))})
   
 }
 
