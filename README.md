@@ -43,7 +43,7 @@ These three files are the COVID indicators used in the Shiny app: new, deaths an
 
 ## Shiny app re-design
 
-On **August 2024**, I have started to introduce some changes in the existing Shiny app design. Both in the back end and app design: 
+On **August 2024**, I have started to introduce some changes to the existing Shiny app design. Both in the back end and app design: 
 
 Back end:
 -   Define new functions to download data from CSSEGIS github repo: https://github.com/CSSEGISandData/COVID-19
