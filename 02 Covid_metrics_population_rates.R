@@ -283,7 +283,7 @@ METRICS_POP_RATES_clean <- METRICS_POP_RATES_initial %>%
 METRICS_POP_RATES_clean
 
 # Get countries list missing population figures
-missing_countries_pop <- METRICS_POP_RATES_initial %>% 
+missing_countries_pop <- METRICS_POP_RATES_clean %>% 
                          arrange(population) %>% 
                          filter(is.na(population)) %>% 
                          select(Country) %>% 
@@ -396,11 +396,96 @@ save.image("~/Documents/Pablo_zorin/Github_Pablo_source_zorin/Shiny-app-using-CO
 LEAFLET_MAPS_DATA_cleansed <- METRICS_POP_RATES_data
 
 
-# 3.5 COMPUTE RATES
+# 3.5 COMPUTE x10,000 POPULATION RATES for each indicator
+
+# From input file: METRICS_POP_RATES_data
+
+# 3.5.0 Before computing rates, ensure I have just one record per day on each country
+#       come countries display data by province, I need to aggregate it at country level.
+# Input file METRICS_POP_RATES_data
+# Output file  DAILY_METRICS_POP_RATES_data
+
+# 3.5.0.1 This will aggregate all Confirmed cases by day. Obtaining just one row per day
+
+# Confirmed cases
+METRICS_conf_DAILY <- METRICS_POP_RATES_data %>% 
+  select(Country,date,Confirmed,year) %>% 
+  group_by(Country,date) %>%
+  summarise(Confirmed_d = sum(Confirmed))
+METRICS_conf_DAILY
+
+#  Recovered cases 
+METRICS_recovered_DAILY <- METRICS_POP_RATES_data %>% 
+  select(Country,date,Recovered,year) %>% 
+  group_by(Country,date) %>%
+  summarise(Recovered_d = sum(Recovered))
+METRICS_recovered_DAILY
+
+#  Deaths cases 
+METRICS_deaths_DAILY <- METRICS_POP_RATES_data %>% 
+  select(Country,date,Deaths,year) %>% 
+  group_by(Country,date) %>%
+  summarise(Deaths_d = sum(Deaths))
+METRICS_deaths_DAILY
+
+
+# 3.5.0.2 Now that I have all three metrics data (Confirmed, Recovered, Deaths) aggregated at daily level for each country 
+# Then I merge them back with POPULATION figures I had initially included on my original METRICS_POP_RATES_data file:
+
+
+
+
+
+# 3.5.0.3 Then I merge together Unique Metrics by day
+METRICS_POP_RATES_data_prep <- left_join(METRICS_conf_DAILY,METRICS_recovered_DAILY,
+                               by = join_by(Country,date))
+
+METRICS_POP_RATES_data_prep2 <- left_join(METRICS_POP_RATES_data_prep,METRICS_deaths_DAILY,
+                                          by = join_by(Country,date))
+
+# remove extra files
+rm(list=ls()[!(ls()%in%c('LEAFLET_MAPS_DATA_cleansed','METRICS_POP_RATES_data_prep2','METRICS_POP_RATES_data'))])
+
+# Now we get 
+
+# I only need to retain the first row of data for each country as this file includes severals rows per country
+# Subset just first row per country:
+
+# Created new variable to flag duplicated values "dup_value = duplicated(Country))
+METRICS_POP_RATES_population_figures <- METRICS_POP_RATES_data %>% select(Country,population)
+METRICS_POP_RATES_population_figures
+
+Countries_population_duplicates <- METRICS_POP_RATES_population_figures %>% 
+  group_by(Country) %>% 
+  mutate(dup_value = duplicated(Country)) %>% 
+  ungroup()
+Countries_population_duplicates
+
+# Applying this principle we can keep just first value of each set of countries, flagged by "dup_value" = FALSE
+# Keep just records with FALSE
+Countries_population_unique <- METRICS_POP_RATES_population_figures %>% 
+  group_by(Country) %>% 
+  mutate(dup_value = duplicated(Country)) %>% 
+  ungroup() %>% 
+  filter(dup_value=="FALSE")
+Countries_population_unique
+
+# 3.5.0.4 Finally I can merge these rates with population figures
+Countries_population_unique_merge <- Countries_population_unique %>% select(Country,population)
+
+METRICS_POP_RATES_data_population <- left_join(METRICS_POP_RATES_data_prep2,
+                                               Countries_population_unique_merge,
+                                               by = join_by(Country))
+
+# Finally I can compute the rates for each of the countries with just one row per day and country
+
+
 
 # 3.5.1 Standard rates for each metric (Confirmed, Recovered, Deaths)
-METRICS_POP_RATES <- METRICS_POP_RATES_data %>% 
-  select(Country,date,Confirmed,Recovered,Deaths, year, population) %>% 
+METRICS_POP_RATES <- METRICS_POP_RATES_data_population %>% 
+  select(Country,date,Confirmed = Confirmed_d,
+                      Recovered = Recovered_d,
+                      Deaths = Deaths_d,date, population) %>% 
   mutate(
     CONFR =ceiling(((Confirmed/population)*10000)),
     RECR = ceiling(((Recovered/population)*10000)),
@@ -420,8 +505,7 @@ names(METRICS_POP_RATES)
 # Keep all previous variables, include 7 days rolling average.
 # Also computed 7 days moving average on daily Confirmed, Recovered and Deaths cases
 METRICS_RATES_DATA_prep <- METRICS_POP_RATES %>%
-  select(Country,date,Confirmed,Recovered,Deaths, year, population,
-         CONFR,RECR,DEATHR) %>% 
+  select(Country,date,Confirmed,Recovered,Deaths, population,CONFR,RECR,DEATHR) %>% 
   mutate(
     Confirmed_7DMA = rollmean(Confirmed, k = 7, fill = NA),
     Recovered_7DMA = rollmean(Recovered, k = 7, fill = NA),
@@ -445,7 +529,6 @@ METRICS_RATES_DATA_final
 #                   includes POPULATION RATES calculated for Confirmed, Recovered, Deaths metrics. 
 #                   Also this file includes a 7 day rolling average to plot Curves in PLOTLY charts.
 #                   For comparison across countries, we will use this rate for TABLES. 
-
 LEAFLET_MAPS_DATA <- LEAFLET_MAPS_DATA_cleansed
 
 METRICS_POP_RATES_DATA <-   METRICS_RATES_DATA_final
@@ -497,10 +580,6 @@ LEAFLET_MAPS_country_names
 write.csv(LEAFLET_MAPS_country_names,here("new_data","LEAFLET_country_names.csv"), row.names = TRUE)
 write.csv(LEAFLET_MAPS_country_names,here("Checks","LEAFLET_country_names.csv"), row.names = TRUE)
 
-# 
-
-
-
 # 4.2 Then I will aggregate cases just by day
 
 # 4.2.1 Confirmed cases 
@@ -547,6 +626,8 @@ LEAFLET_MAPS_DATA <- LEAFLET_MAPS_FINAL_daily_recovered_deaths
 LEAFLET_MAPS_DATA
 
 # Load new data created
+library(janitor)
+
 ALL_COUNTRIES_LAT_LONG_merge <-read.table(here("new_data", "ALL_COUNTRIES_LAT_LONG.csv"),header =TRUE, sep =',',stringsAsFactors =TRUE) %>% clean_names() 
 ALL_COUNTRIES_LAT_LONG_merge
 
@@ -562,17 +643,13 @@ LEAFLET_DATA_LAT_LONG
 # Using some regex expression to fix it
 # gsub() for pattern matching and replacement.
 LEAFLET_MAPS_DATA_FINAL <- LEAFLET_DATA_LAT_LONG %>% mutate(Country_map = gsub(" ","",Country))
+
 METRICS_POP_RATES_DATA_FINAL <- METRICS_POP_RATES_DATA %>% mutate(Country_filter = gsub(" ","_",Country))
   
-
-
 # unique(LEAFLET_MAPS_DATA_FINAL$Country)
 # unique(METRICS_POP_RATES_DATA_FINAL$Country)
 
 rm(list=ls()[!(ls()%in%c('LEAFLET_MAPS_DATA_FINAL','METRICS_POP_RATES_DATA_FINAL'))])
-
-LEAFLET_MAPS_DATAF <- LEAFLET_MAPS_DATA_FINAL
-METRICS_POP_RATES_DATAF <- METRICS_POP_RATES_DATA_FINAL
 
 # Save final image to \new_data sub-folder
 save.image("~/Documents/Pablo_zorin/Github_Pablo_source_zorin/Shiny-app-using-COVID-data/new_data/FINAL_SHINY_DATASETS.RData")
