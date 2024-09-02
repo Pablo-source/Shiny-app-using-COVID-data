@@ -46,11 +46,11 @@ These three files are the COVID indicators used in the Shiny app: new, deaths an
 On **August 2024**, I have started to introduce some redesign changes to the existing Shiny. Changes applied to the back end and front end code of the app: 
 
 Back end:
--   Define new functions to download data from CSSEGIS github repo: https://github.com/CSSEGISandData/COVID-19
+-   Built new functions to download CSSEGIS data from original repo: https://github.com/CSSEGISandData/COVID-19
 https://github.com/Pablo-source/Shiny-app-using-COVID-data/blob/main/00_Initial_data_download.R
--   From {tidygeocoder} package, use geo() function to conduct specific calls to the API to retrieve Lat and Long values. Using batches of 10 up to 50 countries to test the API response time. It worked fine.
+-   From {tidygeocoder} package, used geo() function to conduct specific calls to the API to retrieve Lat and Long values. Using batches of 10 up to 50 countries to test the API response time. It worked fine.
 https://github.com/Pablo-source/Shiny-app-using-COVID-data/blob/main/Checks/API_Obtain_countries_Lat_Long.R
--	Following RAP principles, used **renv::init()** to initialise environment and also taken a snapshot of the project using **renv::snapshot()**. By creating the lockfile, we ensure all packages required for this project are available. These actions create a  project library directory, ensuring we have loaded the right packages and the right versions. 
+-	Following RAP principles, applied **renv::init()** to initialise environment and also taken a snapshot of the project using **renv::snapshot()**. By creating the lockfile, we ensure all packages required for this project are available. These actions create a  project library directory, ensuring we have loaded the right packages and the right versions. 
 https://github.com/Pablo-source/Shiny-app-using-COVID-data/blob/main/Setting%20renv%20for%20this%20project.R
 
 Front end:
