@@ -60,7 +60,8 @@ Front end:
 
 This is still an ongoing re-design of this shiny app that will be completed in coming weeks
 
-![02_Shiny_App_Including_table_02092024](https://github.com/user-attachments/assets/fd43f963-a1d3-42a3-b8a4-7bf65d05f2d8)
+![03_Shiny_App_Including_table_03092024_FMTD](https://github.com/user-attachments/assets/7ba83e4f-1681-46b8-98b0-6866786f9988)
+
 
 
 
