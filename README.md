@@ -54,7 +54,7 @@ https://github.com/Pablo-source/Shiny-app-using-COVID-data/blob/main/Checks/API_
 https://github.com/Pablo-source/Shiny-app-using-COVID-data/blob/main/Setting%20renv%20for%20this%20project.R
 
 Front end:
-- Re-designing Shiny app into a single tab combining all previous charts and plots. I will change slightly the existing charts.
+- Re-designing Shiny app into a single tab combining all previous charts and plots. I will change slightly the existing charts arrangement in the dashboard.
 - I will incorporate new chart types in this new dashboard version
 - Included pop-up tooltips containing daily confirmed, recovered and death cases by country
 
