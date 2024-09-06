@@ -115,7 +115,7 @@ Dataupdate <- function(){
   }
   else if((!file.exists("original_data_download/time_series_19-covid-Confirmed_archived_0325.csv"))||as.double( Sys.time() - file_info("original_data_download/time_series_19-covid-Confirmed_archived_0325.csv")$change_time, units = "hours")>T_refresh ){
     # If the latest refresh exceeds 30 minutes, then you download it again
-    DownloadTheCOVIDData()
+    DownloadCOVIDData()
   }
 }
 
