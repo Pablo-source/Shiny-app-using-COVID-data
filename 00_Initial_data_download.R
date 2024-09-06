@@ -23,6 +23,9 @@
 #library("plotly")
 #library("tidyverse")
 
+# Check pacman is previouly installed to load all required libraries for this project
+if(!require("pacman")) install.packages("pacman")
+
 # Load required libraries 
 pacman::p_load(here,shiny,shinydashboard,DT,fs,leaflet,plotly,tidyverse)
 
