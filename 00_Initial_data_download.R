@@ -104,8 +104,7 @@ DownloadCOVIDData()
 # UnzipCOVIDData()
 
 # FUNCTION 02-02
-# UPDATE AND DOWNLOAD (UNZIP my data):
-# Code explained
+# Code explained: # If the latest refresh exceeds 30 minutes, then you download it again using previous defined  DownloadCOVIDData() function
 
 Dataupdate <- function(){
   T_refresh = 0.5  # hours
