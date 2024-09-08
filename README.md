@@ -62,6 +62,10 @@ This is still an ongoing re-design of this shiny app that will be completed in c
 
 ![04_Shiny_App_Including_table_03092024_FMTD](https://github.com/user-attachments/assets/051632fe-8f24-4e41-b035-48a804c3ac94)
 
+Added legend to Leaflet map
+
+![06_Leaflet_map_number_of_deaths_legend](https://github.com/user-attachments/assets/16734f33-d54f-44bd-9de0-9cfee53d8ed8)
+
 - Included new **plotly** bar chart displaying total cases, it is dynamic based on time slider animation date values
 
 ![05_Dynamic_table_bar_chart_plots](https://github.com/user-attachments/assets/700f4235-44aa-4123-9ced-cc0c5288f404)
