@@ -19,7 +19,7 @@ map_data_prep
 str(map_data_prep)
 library(lubridate)
 
-# 2. Transform initial date variable defined as Factor into a standard R date using as.Date() function.
+# 1.1 Transform initial date variable defined as Factor into a standard R date using as.Date() function.
 map_data <- map_data_prep %>% 
   select(!c("x")) %>% 
   mutate(date = as.Date(date) )
@@ -34,11 +34,39 @@ metrics_rates_prep   <-read.table(here("new_data", "METRICS_POP_RATES_DATA.csv")
 metrics_rates_prep
 
 
-metrics_rates <- metrics_rates_prep %>% 
+metrics_rates_select <- metrics_rates_prep %>% 
   select(!c("x")) %>% 
   mutate(date = as.Date(date) )
-metrics_rates
 
-rm(list=ls()[!(ls()%in%c('map_data','metrics_rates'))])
+head(metrics_rates_select)
+
+
+# 2.1 Apply format to metric rates data frame to be used in renderDataTable() function:
+
+metric_rates_fmt <- metrics_rates_select %>% 
+                select(country, date, confirmed,recovered,deaths,population,
+                       confirmed_7dma,recovered_7dma,deaths_7dma,
+                       conf_ma07_rates,rec_ma07_rates,death_ma07_rates) %>% 
+                  # Create new vars to apply format 
+               mutate(
+                       conf_7Days_moving_avg = round(confirmed_7dma,0), 
+                       rec_7Days_moving_avg = round(recovered_7dma,0), 
+                       deaths_7Days_moving_avg =round(deaths_7dma,0),
+                       'conf_x10,000pop_rate' = round(conf_ma07_rates,0),
+                       'rec_x10,000pop_rate' = round(rec_ma07_rates,0),
+                       'deaths_x10,000pop_rate' = round(death_ma07_rates,0)) %>% 
+              arrange(desc(confirmed))
+
+
+metric_rates <- metric_rates_fmt %>% 
+                select(country, date, confirmed,recovered,deaths,population,
+                       conf_7Days_moving_avg,rec_7Days_moving_avg,deaths_7Days_moving_avg,
+                       'conf_x10,000pop_rate', 'rec_x10,000pop_rate','deaths_x10,000pop_rate'
+                       )
+
+write.csv(metric_rates,here("new_data","METRICS_POP_RATES_DATA_FORMATED.csv"), row.names = TRUE)
+
+
+rm(list=ls()[!(ls()%in%c('map_data','metric_rates'))])
 
 

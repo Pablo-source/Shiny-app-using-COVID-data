@@ -34,3 +34,15 @@ METRICSD_aus_daily_ungroup <- METRICS_AUS %>%
 METRICSD_aus_daily_ungroup
 str(METRICSD_aus_daily_ungroup)
 
+## Check rounding rate figures
+x2 <- pi * 100^(-1:3)
+x2
+round(x2, 3)
+signif(x2, 3)
+
+confr <- 3857.42857142857
+confr
+
+# round confr figure. Second figure digits indicating number of decimal places
+# For no decimal places, enter 0.
+round(confr,0)
