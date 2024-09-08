@@ -66,7 +66,7 @@ Added legend to Leaflet map
 
 ![06_Leaflet_map_number_of_deaths_legend](https://github.com/user-attachments/assets/16734f33-d54f-44bd-9de0-9cfee53d8ed8)
 
-- Included new **plotly** bar chart displaying total cases, it is dynamic based on time slider animation date values
+- Included new dynamic **plotly** bar chart displaying total cases, based on time slider animation date values
 
 ![05_Dynamic_table_bar_chart_plots](https://github.com/user-attachments/assets/700f4235-44aa-4123-9ced-cc0c5288f404)
 
