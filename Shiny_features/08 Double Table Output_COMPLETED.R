@@ -1,7 +1,7 @@
 # Shiny_app_script
 # File: 04 COVID_19_Shiny_app.R
 
-# Latest update: 03/09/2024 Re-designing Plotly bar chart
+# 20/08/2024 Re-designing Leaflat map
 
 library(shiny)
 library(shinydashboard)   # Library to build dashboard
@@ -10,8 +10,8 @@ library(tidyverse)        # Library for data manipulation
 library(leaflet)          # Library to create interactive maps (Enables pop-ups and animations)
 library(plotly)           # Library to create interactive plots (Enables zoom in, zoom out, select area features)
 
-
-# [1-2] UI SECTION -  User interface - app menus
+## source 
+# [1-2]  User interface
 ui <- dashboardPage(
   
   dashboardHeader(title = "COVID-19"),
@@ -27,35 +27,39 @@ ui <- dashboardPage(
   ,
   dashboardBody(  
     
-    # Start building dashboard content
+    # 1. Start building dashboard content
     
-    # 1. KPIS  at the top of the dashboard:
+    # 1.1 We introduce first this section to build some KPIs at the top of the dashboard:
     
-          # Infobox: Total figures KPI UK
-          fluidRow(
-            infoBoxOutput("Confirmed_cases_UK", width = 3),
-            infoBoxOutput("Recovered_cases_UK", width = 3),
-            infoBoxOutput("Death_cases_UK", width = 3),
-            infoBoxOutput("Date", width = 3)
-            
-          ),
+    # Infobox: Total figures KPI UK
+    fluidRow(
+      infoBoxOutput("Confirmed_cases_UK", width = 3),
+      infoBoxOutput("Recovered_cases_UK", width = 3),
+      infoBoxOutput("Death_cases_UK", width = 3),
+      infoBoxOutput("Date", width = 3)
+      
+    ),
     
     # 1.2 All content from this "map" tab must be enclosed in this tabItems() function:
     tabItems(
       # 1.3 Then individual content of this map tab must be INSIDE this tabItem() function:  
       tabItem(
+        
         # 1. Building content for map tabName INSIDE the tabItem() function
         # 1.1 Main title for this MAP tab
         tabName ="main_tab",
-            h2("World map COVID19 deaths by contry -hover over dots for country info"),
+        h2("World map COVID19 deaths by contry -hover over dots for country info"),
         
-    # 2. MAP 
+        
+        
+        # First output is going to be a map, hence I call it "map"
         fluidRow( box(leafletOutput("map"),p("Map displaying COVID-19 confirmed,recovered and deaths cases"),   width = 12 )),
         # 2. Adding content to the map tab
+        
         # Each tab element goes inside a fluidRow() function
         
-    # 3. TIME SLIDER - Used across all charts in the dashboard 
-        # Input data set: "map_data"
+        # 2.1 Element 01: Here we include time slider for map
+        # Input dataset is "map_data"
         #     Variables: date > mutate(date = as.Date(date) )
         fluidRow(       
           box(
@@ -76,82 +80,80 @@ ui <- dashboardPage(
           box(
             dataTableOutput("sitreptable"), width = 15)),
         
-        # New section displaying confirmed, recovered death rates and plotly bar total cases bar chart
+        # Testing Two new Tables
+        # UI side to test  a couple of tables:
         fluidRow( box(  
           column(6, dataTableOutput("tableleft")),
-          column(6, plotlyOutput("ToptenCONF")), width =15))
+          column(6, dataTableOutput("tableright")), width =15))
         
-        ) # tabItem() function closing parenthesis
-    ) # tabItems() function closing parenthesis
-  ) # dashboardBody() function closing parenthesis
-) # dashboardPage() function closing parenthesis 
-
-
-# [2-2] SERVER SECTION - Server  - app content (tables, maps, charts)
-
+        )
+      
+      
+    )
+  )
+) 
+# [2-2] Server   
 server <- function(input,output) {
   
-  # Dynamic data sets
-  # Metrics acoss all data sets: confirmed_d, recovered_d, deaths_d
-  # 1-3. Dynamic data set for KPIS (current and previous day all indicator (confirmed, recovered, death cases))
+  # dailydata     (this DATAFRAME comes from PLOT_LEAFLET_MAPS)
+  # dailyDatatbl  (this DATAFRAME comes from POP_POPULATED )
+  # prevdailyData (this DATAFRAME comes from PLOT_LEAFLET_MAPS but previous day)
   dailyData <- reactive(map_data[map_data$date == format(input$Time_Slider,"%Y/%m/%d"),])
   prevDay <- reactive(map_data[map_data$date == format(input$Time_Slider-1,"%Y/%m/%d"),])
-  # 2-3 Dynamic data set to build dynamic tables
+  ## New dataset for table
+  ## New data set for table
   RATESTable <- reactive(metric_rates[metric_rates$date == format(input$Time_Slider,"%Y/%m/%d"),])
-  # 3-3 Dynamic data set to build Plotly chart 
-  PLOTLYcharts <- reactive(metric_rates[metric_rates$date == format(input$Time_Slider,"%Y/%m/%d"),])
-    
-  # - FIRST DASHBOARD SECTION - KPIs 
-  # KPI 01 - Total confirmed cases - KPI 1-4
+  
+  # Metrics: confirmed_d, recovered_d, deaths_d
+    # FIRST DASHBOARD SECTION - KPIs
+    # KPI 01 - Total confirmed cases - KPI 1-4
   # Daily values and difference between today vs yesterday values
   # Variable: confirmed_d
   output$Confirmed_cases_UK <- renderValueBox({
-      
-      prevday_conf <- prevDay()
-      prevday_conf2 <- prevday_conf %>%
-        select(country_map,date,confirmed_d) %>%
-        filter( country_map == "UnitedKingdom")
-      
-      day_conf <- dailyData()
-      day_conf2 <- day_conf %>%
-        select(country_map,date,confirmed_d) %>%
-        filter( country_map == "UnitedKingdom")
-      
-      valueBox(paste0(
-        # Main figure dispplays daily confirmed cases
-        format(day_conf2$confirmed_d, big.mark = ','),
-        
-        # Percentage change from previous day
-        paste0("[",
-               round(
-                 (
-                   (day_conf2$confirmed_d-prevday_conf2$confirmed_d)/
-                     prevday_conf2$confirmed_d
-                 )*100
-                 ,1),"%"
-               ,"]")
-      ), "Confirmed | % change prev day | UK", icon = icon("list"),
-      color = "blue")
-      
     
-    })
+    prevday_conf <- prevDay()
+    prevday_conf2 <- prevday_conf %>%
+      select(country_map,date,confirmed_d) %>%
+      filter( country_map == "UnitedKingdom")
+    
+    day_conf <- dailyData()
+    day_conf2 <- day_conf %>%
+      select(country_map,date,confirmed_d) %>%
+      filter( country_map == "UnitedKingdom")
+    
+    valueBox(paste0(
+      # Main figure dispplays daily confirmed cases
+      format(day_conf2$confirmed_d, big.mark = ','),
+      
+      # Percentage change from previous day
+      paste0("[",
+             round(
+               (
+                 (day_conf2$confirmed_d-prevday_conf2$confirmed_d)/
+                   prevday_conf2$confirmed_d
+               )*100
+               ,1),"%"
+             ,"]")
+    ), "Confirmed | % change prev day | UK", icon = icon("list"),
+    color = "blue")
     
     
-  # KPI 02 - Total recovered cases  - KPI 2-4
+  })
+  
+    # KPI 02 - Total recovered cases  - KPI 2-4
   # Daily values and difference between today vs yesterday values
   # Variable: recovered_d
   output$Recovered_cases_UK <- renderValueBox({
-    
-    day_rec <- dailyData()
-    day_rec2 <- day_rec %>%
-      select(country_map,date,recovered_d) %>%
-      filter( country_map == "UnitedKingdom")
     
     prevday_rec <- prevDay()
     prevday_rec2 <- prevday_rec %>%
       select(country_map,date,recovered_d) %>%
       filter( country_map == "UnitedKingdom")
     
+    day_rec <- dailyData()
+    day_rec2 <- day_rec %>%
+      select(country_map,date,recovered_d) %>%
+      filter( country_map == "UnitedKingdom")
     
     valueBox(paste0(
       # Main figure dispplays daily confirmed cases
@@ -175,29 +177,27 @@ server <- function(input,output) {
   # KPI 03 - Total death cases - KPI 3-4
   # Daily values and difference between today vs yesterday values
   # Variable: deaths_d
-  
   output$Death_cases_UK <- renderValueBox({
     
-    DeathCases <- dailyData()
-    DeathCases2 <- DeathCases %>% 
-      select(country_map,date,deaths_d) %>% 
+    Cases <- dailyData()
+    Cases2 <- Cases %>% 
+      select(country_map,date,confirmed_d) %>% 
       filter( country_map == "UnitedKingdom")
     
-    DeathCasesprev <- prevDay() 
-    DeathCasesprev2 <- DeathCasesprev %>% 
-      select(country_map,date,deaths_d) %>% 
+    Casesprev <- prevDay() 
+    Casesprev2 <- Casesprev %>% 
+      select(country_map,date,confirmed_d) %>% 
       filter(country_map =="United Kingdom")
     
     valueBox(paste0(
-      format(DeathCases2$deaths_d, big.mark = ','),
+      format(Cases2$confirmed_d, big.mark = ','),
       paste0("[",
              round(
                (
-                 (DeathCases2$deaths_d - DeathCasesprev2$deaths_d)/
-                   DeathCasesprev2$deaths_d
-               )*100
-               ,1),"%"
-             ,"]")
+                 (Cases2$confirmed_d - Casesprev2$confirmed_d)/
+                   Casesprev2$confirmed_d
+               )*100,1)
+             ,"%","]")
     ), "Deaths | % change prev day | UK", icon = icon("user-doctor"),
     color = "orange"
     )
@@ -205,7 +205,7 @@ server <- function(input,output) {
     
   })
   
-  # KPI 04 - Date - KPI 4-4
+  # KPI 04 - Total death cases - KPI 4-4
   # DATE
   # Variable: date
   output$Date   <- renderValueBox({
@@ -216,21 +216,19 @@ server <- function(input,output) {
       filter( country_map == "UnitedKingdom")
     
     valueBox(Datebox2$date,
-      "Date | Daily figures",
-      icon = icon("calendar"),color = "yellow")
+             "Date | Daily figures",
+             icon = icon("calendar"),color = "yellow")
     
   })
   
-  # - SECOND DASHBOARD SECTION - Map 
-  # Output 05 "MAP"
+  # OUTPUT 05 "map"
   output$map = renderLeaflet ({
     
     # This is the new data frame that is modified by "Time_Slider" parameter
     # We input now this dataframe into the LEAFLEFT function
     dataframe <- dailyData()
     
-    # Create new palette for map legend 
-    pal_sb <- colorNumeric(palette = "YlGnBu",domain = dataframe$deaths_d)      
+    pal_sb <- colorNumeric("Greens",domain = dataframe$deaths_d)    
     
     # If filter date is disables the map is displayed !!
     #   filter(date == input$date[1]) %>%   
@@ -255,15 +253,10 @@ server <- function(input,output) {
                  fillColor = "lightblue",
                  highlightOptions = highlightOptions( weight = 10, color = "red", fillColor = "green")
                  
-      ) %>% 
-      # Add legend to existing map
-      addLegend("bottomleft", pal = pal_sb, values = ~deaths_d,
-                title = "COVID-19 Deaths",opacity = 1)
+      )
   })
   
-  # - THIRD DASHBOARD SECTION - Data Table
-  # Output 06 "DATA TABLE" 
-  # population)*10000
+  # OUTPUT 06 "DATA TABLE" 
   output$sitreptable <- renderDataTable({
     
     Tabledesc <- RATESTable()
@@ -277,13 +270,12 @@ server <- function(input,output) {
              'rec_x10,000pop_rate',
              'deaths_x10,000pop_rate') %>% 
       arrange(desc(confirmed))
-  
+    
   })
   
-  # OUTPUT 07   - Table in new container including two items (item 01-02 TABLE )
+ # OUTPUT 07   - Test TableLEFT
   output$tableleft <- renderDataTable({
     
-    # Using dynamic time-slider input data set  
     TableLEFT <- RATESTable()
     
     TableLEFT  %>%
@@ -292,41 +284,23 @@ server <- function(input,output) {
              'rec_x10,000pop_rate',
              'deaths_x10,000pop_rate') %>% 
       arrange(desc('conf_x10,000pop_rate'))
+
+ })
+  
+  # OUTPUT 08 - Test TableRIGHT
+ 
+  output$tableright <- renderDataTable({
+    
+    TableRIGHT <- RATESTable()
+    
+    TableRIGHT  %>%
+      select(country, date, 
+             'conf_x10,000pop_rate',
+             'rec_x10,000pop_rate',
+             'deaths_x10,000pop_rate') %>% 
+      arrange(desc('rec_x10,000pop_rate'))
     
   })
-  
-  # - FOURTH DASHBOARD SECTION - Plotly bar chart
-  # OUTPUT 08 - PLOTLY chart in a container including two items (item 02-02 PLOTLY CHART )
-  #             Metric: 'conf_x10,000pop_rate'
-  output$ToptenCONF = renderPlotly({
-    
-    # Using dynamic time-slider input data set  
-    metric_rates <- PLOTLYcharts()
-    
-    conf_top_cases <- metric_rates  %>%
-      select(country,date,confirmed) %>% 
-      mutate(Max_date = max(metric_rates$date)) %>% 
-      mutate(Flag_max_date = ifelse(Max_date == date,1,0)) %>% 
-      filter(Flag_max_date==1) %>% 
-      arrange(desc('conf_x10,000pop_rate')) %>% 
-      group_by(date) %>% 
-      slice(1:10) %>% 
-      ungroup()
-    
-    COUNTRIES_flipped <- ggplot(conf_top_cases,
-                                aes(x = reorder(country, +confirmed), y = confirmed)) +
-      geom_bar(position = 'dodge', stat = 'identity',fill = "deepskyblue3") +
-      geom_text(aes(label = confirmed), position = position_dodge(width = 0.9),
-                vjust = -0.30, hjust = + 1.20) +  # Set vjust to -0.30 to display just a small gap between chart and figure 
-      ggtitle("Total confirmed cases by Country") +
-      coord_flip()
-    COUNTRIES_flipped
-    
-    
-    ggplotly(COUNTRIES_flipped)
-    
-  })
-  
 }
 
 # Launch it
