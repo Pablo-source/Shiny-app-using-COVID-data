@@ -71,7 +71,8 @@ Added legend to Leaflet map
 ![05_Dynamic_table_bar_chart_plots](https://github.com/user-attachments/assets/700f4235-44aa-4123-9ced-cc0c5288f404)
 
 - Added new section at the end of the dashboard including a drop down menu to display **plotly line charts** by selected country
-![08_Plotly_interactive_charts](https://github.com/user-attachments/assets/581ce8f1-bd02-48cb-8e0d-5de6906fb053)
+
+![10_Plotly_interactive_charts_Germany](https://github.com/user-attachments/assets/6304c90c-8696-4688-a1f0-a700cc692c0c)
 
  
 
