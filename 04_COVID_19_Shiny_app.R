@@ -309,7 +309,7 @@ server <- function(input,output) {
     
   })
   
-  # - FOURTH DASHBOARD SECTION - Plotly bar chart
+  # - FOURTH DASHBOARD SECTION - Plotly line charts -Confirmed, Recovered and Death cases
   
   # OUTPUT 08 > Confirmed cases plotly line chart - Country displayed select from UI Drop down menu
   output$Confcountries = renderPlotly({
