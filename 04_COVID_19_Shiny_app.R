@@ -76,11 +76,25 @@ ui <- dashboardPage(
           box(
             dataTableOutput("sitreptable"), width = 15)),
         
-        # New section displaying confirmed, recovered death rates and plotly bar total cases bar chart
-        fluidRow( box(  
-          column(6, dataTableOutput("tableleft")),
-          column(6, plotlyOutput("ToptenCONF")), width =15))
+    # 2. Drop down menu to choose country for Plotly Line charts section
+    fluidRow(h2("Covid 19 Timeline measures by country")),
+    fluidRow(h4("Select country from dropdown menu - Interactive Plotly line charts")),
+    
+    # 2.1 Menu to select country for Plotly charts
+    fluidRow(column(4,
+                    selectInput("country",
+                                "Country:",
+                                c("All",
+                                  unique(as.character(metric_rates$country)))))
+    ),
+    # 3. Three Plotly line charts
+    fluidRow( box(  
+      column(4, plotlyOutput("Confcountries")),
+      column(4, plotlyOutput("Reccountries")),
+      column(4, plotlyOutput("Deathscountries")),
+      width =12))
         
+       
         ) # tabItem() function closing parenthesis
     ) # tabItems() function closing parenthesis
   ) # dashboardBody() function closing parenthesis
@@ -296,34 +310,45 @@ server <- function(input,output) {
   })
   
   # - FOURTH DASHBOARD SECTION - Plotly bar chart
-  # OUTPUT 08 - PLOTLY chart in a container including two items (item 02-02 PLOTLY CHART )
-  #             Metric: 'conf_x10,000pop_rate'
-  output$ToptenCONF = renderPlotly({
+  
+  # OUTPUT 08 > Confirmed cases plotly line chart - Country displayed select from UI Drop down menu
+  output$Confcountries = renderPlotly({
     
-    # Using dynamic time-slider input data set  
-    metric_rates <- PLOTLYcharts()
-    
-    conf_top_cases <- metric_rates  %>%
-      select(country,date,confirmed) %>% 
-      mutate(Max_date = max(metric_rates$date)) %>% 
-      mutate(Flag_max_date = ifelse(Max_date == date,1,0)) %>% 
-      filter(Flag_max_date==1) %>% 
-      arrange(desc('conf_x10,000pop_rate')) %>% 
-      group_by(date) %>% 
-      slice(1:10) %>% 
-      ungroup()
-    
-    COUNTRIES_flipped <- ggplot(conf_top_cases,
-                                aes(x = reorder(country, +confirmed), y = confirmed)) +
-      geom_bar(position = 'dodge', stat = 'identity',fill = "deepskyblue3") +
-      geom_text(aes(label = confirmed), position = position_dodge(width = 0.9),
-                vjust = -0.30, hjust = + 1.20) +  # Set vjust to -0.30 to display just a small gap between chart and figure 
-      ggtitle("Total confirmed cases by Country") +
-      coord_flip()
-    COUNTRIES_flipped
+    data_confpl <- metric_rates
+    if (input$country != "All") {
+      data_confpl <- data_confpl[metric_rates$country == input$country,] 
+    }
+    # Confirmed cases PLOTLY line chart
+    plot_ly(data_confpl, x = ~date, y = ~conf_7Days_moving_avg, type = 'scatter', mode = 'lines', color = 'blue')%>%
+      layout(title="Confirmed cases")
     
     
-    ggplotly(COUNTRIES_flipped)
+  })
+  
+  # OUTPUT 09 > Recovered cases plotly line chart - Country displayed select from UI Drop down menu
+  output$Reccountries = renderPlotly({
+    
+    data_recpl <- metric_rates
+    if (input$country != "All") {
+      data_recpl <- data_recpl[metric_rates$country == input$country,] 
+    }
+    # Confirmed cases PLOTLY line chart
+    plot_ly(data_recpl, x = ~date, y = ~rec_7Days_moving_avg, type = 'scatter', mode = 'lines', color = 'red')%>%
+      layout(title="Recovered cases")
+    
+    
+  })
+  # OUTPUT 10 > Death cases plotly line chart - Country displayed select from UI Drop down menu
+  output$Deathscountries = renderPlotly({
+    
+    data_deathpl <- metric_rates
+    if (input$country != "All") {
+      data_deathpl <- data_deathpl[metric_rates$country == input$country,] 
+    }
+    # Confirmed cases PLOTLY line chart
+    plot_ly(data_deathpl, x = ~date, y = ~deaths_7Days_moving_avg, type = 'scatter', mode = 'lines', color = 'orange')%>%
+      layout(title="Deaths")
+    
     
   })
   
