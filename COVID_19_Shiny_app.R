@@ -1,5 +1,6 @@
 # Shiny_app_script
-# File: 04 COVID_19_Shiny_app.R
+# Updated on 21/09/2024
+# File: COVID_19_Shiny_app.R
 
 # Latest update: 03/09/2024 Re-designing Plotly bar chart
 
@@ -9,6 +10,26 @@ library(DT)               # Library for interactive tables
 library(tidyverse)        # Library for data manipulation
 library(leaflet)          # Library to create interactive maps (Enables pop-ups and animations)
 library(plotly)           # Library to create interactive plots (Enables zoom in, zoom out, select area features)
+
+## Helper function
+#  Source all required R scripts to download COVID data, create new fields for rates calculations
+#  This is an ad hoc function that SOURCES all scripts from \R folder
+
+files <- list.files(here::here("R"),
+                    full.names = TRUE,
+                    pattern = "R$")
+
+source_all <-function(path = "R"){
+  files <- list.files(here::here(path),
+                      full.names = TRUE,
+                      pattern = "R$")
+  suppressMessages(lapply(files,source))
+  invisible(path)
+}
+
+# calling  this ad hoc source_all() function to run all R scripts from R folder  
+# creating required Dataframe to populate the SHINY APP.
+source_all()
 
 
 # [1-2] UI SECTION -  User interface - app menus
@@ -89,7 +110,7 @@ ui <- dashboardPage(
   fluidRow(
     box(  
       column(6, dataTableOutput("tableleft")),
-      column(6, plotlyOutput("ToptenCONF")), width =15)
+      column(6, plotlyOutput("ToptenCONF")), width =15) 
     
   ),
       

@@ -1,5 +1,8 @@
 # 02 Covid_metrics_population_rates.R
 
+# Important: This scripts runs using source_all() adhoc function from \R sub-folder
+
+
 # AIM
 # merge original METRICS_FOR_POP_RATES.csv file stored in \original_data_processed 
 # with WDI_countries_pop_2019_clean.csv file stored in the same folder. 
