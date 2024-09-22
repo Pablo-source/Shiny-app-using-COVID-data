@@ -6,7 +6,7 @@
 
 This is a Shiny app demo to practice how to create interactive visualizations in R. Using drop down filters to display information by countries and also adding  animations to show progress in time of covid19 cases around the world.
 
-## How to run this Shiny app
+## How to run this Shiny app locally on your machine
 
 To run this app follow these two steps:
 
