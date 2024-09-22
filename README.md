@@ -6,7 +6,19 @@
 
 This is a Shiny app demo to practice how to create interactive visualizations in R. Using drop down filters to display information by countries and also adding  animations to show progress in time of covid19 cases around the world.
 
-## Data for the app downloaded from Center for Systems Science and Engineering (JHU CSSE) repository
+## How to run this Shiny app
+
+To run this app follow these two steps:
+
+1-2. Clone *Shiny-app-using-COVID-data repo using git on you IDE or your terminal using local Clone HTTPS option
+<https://github.com/Pablo-source/Shiny-app-using-COVID-data.git>
+
+> git clone git@github.com:Pablo-source/Shiny-app-using-COVID-data.git
+
+2-2. Open “**app_launch_TRIGGER.R** script”
+- Then **press** the **"Source"** button in RStudio to trigger this Shiny app.
+
+## Data downloaded from Center for Systems Science and Engineering (JHU CSSE) repository
 
 Data for this app is produced by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE) for their 2019 Novel Coronavirus Visual Dashboard and Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
 
