@@ -22,8 +22,8 @@ I have read the data directly into R with an ad hoc function DownloadCOVIDData()
 
 These are the three input files read into R directly from the “archived_time_series” folder of the CSSEGISandData/COVID-19 repository:  
 
-# [1] "time_series_19-covid-Confirmed_archived_0325.csv" "time_series_19-covid-Deaths_archived_0325.csv"   
-# [3] "time_series_19-covid-Recovered_archived_0325.csv"
+- [1] "time_series_19-covid-Confirmed_archived_0325.csv" "time_series_19-covid-Deaths_archived_0325.csv"   
+- [3] "time_series_19-covid-Recovered_archived_0325.csv"
 
 This is an example of the path for COVID-19 Cofirmed cases  file: 
 
