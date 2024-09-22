@@ -13,7 +13,7 @@ To run this app follow these two steps:
 1-2. Clone **Shiny-app-using-COVID-data** repo using git on you IDE or your terminal using local Clone HTTPS option
 <https://github.com/Pablo-source/Shiny-app-using-COVID-data.git>
 
-> git clone git@github.com:Pablo-source/Shiny-app-using-COVID-data.git
+> **git clone https://github.com/Pablo-source/Shiny-app-using-COVID-data.git**
 
 2-2. Open “**app_launch_TRIGGER.R** script”
 - Then **press** the **"Source"** button in RStudio to trigger this Shiny app.
