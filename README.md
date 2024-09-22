@@ -10,7 +10,7 @@ This is a Shiny app demo to practice how to create interactive visualizations in
 
 To run this app follow these two steps:
 
-1-2. Clone *Shiny-app-using-COVID-data repo using git on you IDE or your terminal using local Clone HTTPS option
+1-2. Clone **Shiny-app-using-COVID-data** repo using git on you IDE or your terminal using local Clone HTTPS option
 <https://github.com/Pablo-source/Shiny-app-using-COVID-data.git>
 
 > git clone git@github.com:Pablo-source/Shiny-app-using-COVID-data.git
