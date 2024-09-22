@@ -4,9 +4,7 @@
 
 # Shiny-app-using-COVID-data
 
-Basic bootstrap shiny app including leaflet maps, plots and dt tables
-
-This is a basic Shiny app to practice how to create interactive visualizations in R. Using drop down filters to display information by countries and also adding  animations to show progress in time of covid19 cases around the world.
+This is a Shiny app demo to practice how to create interactive visualizations in R. Using drop down filters to display information by countries and also adding  animations to show progress in time of covid19 cases around the world.
 
 ## Downloaded data for the app from John Hopkins University 2019 Novel Coronavirus Visual Dashboard
 
@@ -15,7 +13,26 @@ Data for this app is produced by the Johns Hopkins University Center for Systems
 John Hopkins repository stores daily CODIV-19 data files for each country worldwide
 
 https://github.com/CSSEGISandData/COVID-19 
- 
+
+Original data to populate this Shiny dashboard can be found in the CSSEGISandData main GitHub website. <https://github.com/CSSEGISandData>
+
+The set of three specific files used on this Shiny Dashboard, can be found found under the  “archived_time_series” folder: <https://github.com/CSSEGISandData/COVID-19/tree/master/archived_data/archived_time_series>
+
+I have read the data directly into R with an ad hoc function DownloadCOVIDData() using download.file() function with specific URL address for each of the three individual files, this function used the **Raw** path provided on the GitHub repo location of each of the invidual input files: 
+
+These are the three input files read into R directly from the “archived_time_series” folder of the CSSEGISandData/COVID-19 repository:  
+
+# [1] "time_series_19-covid-Confirmed_archived_0325.csv" "time_series_19-covid-Deaths_archived_0325.csv"   
+# [3] "time_series_19-covid-Recovered_archived_0325.csv"
+
+This is an example of the path for COVID-19 Cofirmed cases  file: 
+
+1-2. First I located the specific file in the \archived_fime_series folder:
+
+https://github.com/CSSEGISandData/COVID-19/blob/master/archived_data/archived_time_series/time_series_19-covid-Confirmed_archived_0325.csv
+
+2-2. Then I obtained the final URL using the “Raw” button. This allows the the download.file() function to download the file directly from the original URL location to my local machine
+"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/archived_data/archived_time_series/time_series_19-covid-Confirmed_archived_0325.csv",
 
 
 ## Shiny app re-design
