@@ -49,7 +49,7 @@ https://github.com/CSSEGISandData/COVID-19/blob/master/archived_data/archived_ti
 
 ## Shiny app re-design
 
-On **August 2024**, I have started to introduce re-design changes to the app. Imrpvpving its design and applying RAP principles to project: 
+On **August 2024**, I have introduced re-design changes to the app. Imrpvpving its design and applying RAP principles to the project: 
 
 Back end:
 -   Built new functions to download CSSEGIS data from original repo: https://github.com/CSSEGISandData/COVID-19
