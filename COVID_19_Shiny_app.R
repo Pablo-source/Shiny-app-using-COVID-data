@@ -1,5 +1,6 @@
 # Shiny_app_script
-# File: 04 COVID_19_Shiny_app.R
+# Updated on 21/09/2024
+# File: COVID_19_Shiny_app.R
 
 # Latest update: 03/09/2024 Re-designing Plotly bar chart
 
@@ -9,6 +10,26 @@ library(DT)               # Library for interactive tables
 library(tidyverse)        # Library for data manipulation
 library(leaflet)          # Library to create interactive maps (Enables pop-ups and animations)
 library(plotly)           # Library to create interactive plots (Enables zoom in, zoom out, select area features)
+
+## Helper function
+#  Source all required R scripts to download COVID data, create new fields for rates calculations
+#  This is an ad hoc function that SOURCES all scripts from \R folder
+
+files <- list.files(here::here("R"),
+                    full.names = TRUE,
+                    pattern = "R$")
+
+source_all <-function(path = "R"){
+  files <- list.files(here::here(path),
+                      full.names = TRUE,
+                      pattern = "R$")
+  suppressMessages(lapply(files,source))
+  invisible(path)
+}
+
+# calling  this ad hoc source_all() function to run all R scripts from R folder  
+# creating required Dataframe to populate the SHINY APP.
+source_all()
 
 
 # [1-2] UI SECTION -  User interface - app menus
@@ -43,6 +64,26 @@ ui <- dashboardPage(
     # 1.2 All content from this "map" tab must be enclosed in this tabItems() function:
     tabItems(
       # 1.3 Then individual content of this map tab must be INSIDE this tabItem() function:  
+      
+      # First tabItem to include the "about"  tab, defined by the first menuItem() function
+  #    tabItem(
+  #      tabName ="about",
+ #       h1("About the COVID-19 app"),
+   #     fluidRow(box(source("Shiny_features/About-tab/about_tab.R", local =T),width=11)),
+      
+      tabItem( 
+        
+        tabName ="about",
+        h1("About the COVID-19 app"),
+        
+        fluidRow( box(
+          source("Shiny_features/About_tab/about_tab.R", local = T)
+          ,width = 12 ))
+        
+        ),
+      
+      # Then here goes the content of the SECOND tab, defined by the second menuItem() function
+      
       tabItem(
         # 1. Building content for map tabName INSIDE the tabItem() function
         # 1.1 Main title for this MAP tab
@@ -75,25 +116,42 @@ ui <- dashboardPage(
         fluidRow(
           box(
             dataTableOutput("sitreptable"), width = 15)),
-        
-    # 2. Drop down menu to choose country for Plotly Line charts section
+    
+    # 4. Container with two objects (A Table and dynamic plotly bar chart) 
+    # Container with two objects (A Table and dynamic plotly bar chart) 
+    # 1-2 Table
+    # 2-2 Plotlty bar chart 
+    # UI side to test  a couple of tables:
+  #  fluidRow( box(  
+  #    column(6, dataTableOutput("tableleft")),
+  #    column(6, plotlyOutput("ToptenCONF")), width =15))
+    
+  #    ),
+  fluidRow(
+    box(  
+      column(6, dataTableOutput("tableleft")),
+      column(6, plotlyOutput("ToptenCONF")), width =15) 
+    
+  ),
+      
+    # 5. Drop down menu to choose country for Plotly Line charts section
     fluidRow(h2("Covid 19 Timeline measures by country")),
     fluidRow(h4("Select country from dropdown menu - Interactive Plotly line charts")),
     
-    # 2.1 Menu to select country for Plotly charts
+    # 5.1 Menu to select country for Plotly charts
     fluidRow(column(4,
                     selectInput("country",
                                 "Country:",
                                 c("All",
                                   unique(as.character(metric_rates$country)))))
     ),
-    # 3. Three Plotly line charts
+    # 6. Three Plotly line charts
     fluidRow( box(  
       column(4, plotlyOutput("Confcountries")),
       column(4, plotlyOutput("Reccountries")),
       column(4, plotlyOutput("Deathscountries")),
       width =12))
-        
+    
        
         ) # tabItem() function closing parenthesis
     ) # tabItems() function closing parenthesis
@@ -308,6 +366,39 @@ server <- function(input,output) {
       arrange(desc('conf_x10,000pop_rate'))
     
   })
+  
+  # OUTPUT 08 - Test Plotly chart in a container inclulding two items (item 02-02 PLOTLY CHART )
+  #             Metric: 'conf_x10,000pop_rate'
+  output$ToptenCONF = renderPlotly({
+    
+    # Using dynamic time-slider input data set  
+    metric_rates <- PLOTLYcharts()
+    
+    conf_top_cases <- metric_rates  %>%
+      select(country,date,confirmed) %>% 
+      mutate(Max_date = max(metric_rates$date)) %>% 
+      mutate(Flag_max_date = ifelse(Max_date == date,1,0)) %>% 
+      filter(Flag_max_date==1) %>% 
+      arrange(desc('conf_x10,000pop_rate')) %>% 
+      group_by(date) %>% 
+      slice(1:10) %>% 
+      ungroup()
+    
+    COUNTRIES_flipped <- ggplot(conf_top_cases,
+                                aes(x = reorder(country, +confirmed), y = confirmed)) +
+      geom_bar(position = 'dodge', stat = 'identity',fill = "deepskyblue3") +
+      geom_text(aes(label = confirmed), 
+                position = position_stack(vjust = 0.7)
+                ,size = 3 ) +  # Sabels INSIDE the bars we choose “    position = position_stack(vjust = 0.7) 
+      ggtitle("Total confirmed cases by Country") +
+      coord_flip()
+    COUNTRIES_flipped
+    
+    
+    ggplotly(COUNTRIES_flipped)
+    
+  })
+  
   
   # - FOURTH DASHBOARD SECTION - Plotly line charts -Confirmed, Recovered and Death cases
   

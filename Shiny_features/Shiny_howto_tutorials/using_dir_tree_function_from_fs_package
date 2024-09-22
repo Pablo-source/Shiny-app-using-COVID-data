@@ -1,0 +1,36 @@
+- using dir_tree() function from {fs} package
+
+- Description
+Print contents of directories in a tree-like format
+
+- Arguments
+-  path:A path to print the tree from
+-  recurse: If TRUE recurse fully, if a positive number the number of levels to recurse.
+-  max_depth: max number of levels on the folder structure to be displayed
+...	
+Arguments passed on to dir_ls
+
+> dir_tree(recursive = FALSE, max_depth = 1)
+Warning: `recursive` is deprecated, please use `recurse` instead
+.
+├── 00_Initial_data_download.R
+├── 01_Shiny_app_data_prep.R
+├── 02 Covid_metrics_population_rates.R
+├── 03_Load_required_Shiny_files.R
+├── 04_COVID_19_Shiny_app.R
+├── CODE_OF_CONDUCT.md
+├── Checks
+├── Countries_population
+├── README.md
+├── Screenshots
+├── Setting renv for this project.R
+├── Shiny-app-using-COVID-data.Rproj
+├── Shiny_features
+├── Shiny_howto_tutorials
+├── UI
+├── new_data
+├── original_data_download
+├── original_data_processed
+├── previous_shiny_app
+├── renv
+└── renv.lock

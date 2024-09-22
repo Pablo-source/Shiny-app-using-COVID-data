@@ -1,4 +1,4 @@
-# 00_Initial_data_download.R
+# File:  00_Initial_data_download.R
 # Updated on 10th Dec 2022
 
 # Install required packages 
@@ -22,6 +22,8 @@
 #library("leaflet")
 #library("plotly")
 #library("tidyverse")
+
+# Important: This scripts runs using source_all() adhoc function from \R sub-folder
 
 # Check pacman is previouly installed to load all required libraries for this project
 if(!require("pacman")) install.packages("pacman")

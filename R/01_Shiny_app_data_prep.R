@@ -1,5 +1,7 @@
 # R Script: 01_Shiny_app_data_prep.R
 
+# Important: This scripts runs using source_all() adhoc function from \R sub-folder
+
 # Include this two lines of code to ensure {pacman} package is installed to load all remaining packages for this script.
 
 if (!require("pacman")) install.packages("pacman")
