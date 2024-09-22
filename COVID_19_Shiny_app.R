@@ -64,6 +64,26 @@ ui <- dashboardPage(
     # 1.2 All content from this "map" tab must be enclosed in this tabItems() function:
     tabItems(
       # 1.3 Then individual content of this map tab must be INSIDE this tabItem() function:  
+      
+      # First tabItem to include the "about"  tab, defined by the first menuItem() function
+  #    tabItem(
+  #      tabName ="about",
+ #       h1("About the COVID-19 app"),
+   #     fluidRow(box(source("Shiny_features/About-tab/about_tab.R", local =T),width=11)),
+      
+      tabItem( 
+        
+        tabName ="about",
+        h1("About the COVID-19 app"),
+        
+        fluidRow( box(
+          source("Shiny_features/About_tab/about_tab.R", local = T)
+          ,width = 12 ))
+        
+        ),
+      
+      # Then here goes the content of the SECOND tab, defined by the second menuItem() function
+      
       tabItem(
         # 1. Building content for map tabName INSIDE the tabItem() function
         # 1.1 Main title for this MAP tab
