@@ -16,7 +16,7 @@ To run this app follow these two steps:
 > **git clone https://github.com/Pablo-source/Shiny-app-using-COVID-data.git**
 
 2-2. Open “**app_launch_TRIGGER.R** script”
-- Then **press** the **"Source"** button in RStudio to trigger this Shiny app.
+- Then  press **"Source"** button in RStudio to trigger the Shiny app.
 
 ## Data downloaded from Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE) repository
 
