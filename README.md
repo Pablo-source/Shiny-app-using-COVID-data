@@ -18,7 +18,7 @@ To run this app follow these two steps:
 2-2. Open “**app_launch_TRIGGER.R** script”
 - Then **press** the **"Source"** button in RStudio to trigger this Shiny app.
 
-## Data downloaded from Center for Systems Science and Engineering (JHU CSSE) repository
+## Data downloaded from Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE) repository
 
 Data for this app is produced by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE) for their 2019 Novel Coronavirus Visual Dashboard and Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
 
