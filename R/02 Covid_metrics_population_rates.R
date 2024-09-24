@@ -392,7 +392,7 @@ missing_countries_pop_final
 rm(list=ls()[! ls() %in% c("METRICS_POP_RATES_data","missing_countries_pop_final")])
 
 
-save.image("~/Documents/Pablo_zorin/Github_Pablo_source_zorin/Shiny-app-using-COVID-data/new_data/METRICS_AND_LEAFLETS_DATA.RData")
+save.image("~/new_data/METRICS_AND_LEAFLETS_DATA.RData")
 
 # # A tibble: 0 × 1 There is no missing countries, all population figures have been included.
 
@@ -497,7 +497,7 @@ METRICS_POP_RATES <- METRICS_POP_RATES_data_population %>%
 
 METRICS_POP_RATES
 
-save.image("~/Documents/Pablo_zorin/Github_Pablo_source_zorin/Shiny-app-using-COVID-data/new_data/METRICS_POP_RATES.RData")
+save.image("~/new_data/METRICS_POP_RATES.RData")
 
 # 3.5.2 # compute rolling average on POPRATESG WITHOUT ANY MISSING VALUE
 library(zoo)
@@ -655,7 +655,7 @@ METRICS_POP_RATES_DATA_FINAL <- METRICS_POP_RATES_DATA %>% mutate(Country_filter
 rm(list=ls()[!(ls()%in%c('LEAFLET_MAPS_DATA_FINAL','METRICS_POP_RATES_DATA_FINAL'))])
 
 # Save final image to \new_data sub-folder
-save.image("~/Documents/Pablo_zorin/Github_Pablo_source_zorin/Shiny-app-using-COVID-data/new_data/FINAL_SHINY_DATASETS.RData")
+save.image("~/new_data/FINAL_SHINY_DATASETS.RData")
 
 # Save final two datasets as .csv files to \new_data sub-folder
 write.csv(LEAFLET_MAPS_DATA_FINAL,here("new_data","LEAFLET_MAPS_DATA.csv"), row.names = TRUE)
