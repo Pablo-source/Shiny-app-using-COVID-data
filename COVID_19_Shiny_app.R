@@ -1,5 +1,13 @@
 # Shiny_app_script
 # Updated on 21/09/2024
+#
+#  Updated_on   by     Changes_description
+#  21/09/2024   Pablo  Added new container using fluidRow(). Including two items 
+#                            [01-02 TABLE, 02-02 Plotly bar chart]. Functions: dataTableOutput("tableleft"),plotlyOutput("ToptenCONF")  
+#
+#
+#
+#
 # File: COVID_19_Shiny_app.R
 
 # Latest update: 03/09/2024 Re-designing Plotly bar chart
@@ -118,20 +126,22 @@ ui <- dashboardPage(
             dataTableOutput("sitreptable"), width = 15)),
     
     # 4. Container with two objects (A Table and dynamic plotly bar chart) 
-    # Container with two objects (A Table and dynamic plotly bar chart) 
+    #    Secont Tabbed frame with three plotly bar charts  
     # 1-2 Table
     # 2-2 Plotlty bar chart 
-    # UI side to test  a couple of tables:
-  #  fluidRow( box(  
-  #    column(6, dataTableOutput("tableleft")),
-  #    column(6, plotlyOutput("ToptenCONF")), width =15))
-    
-  #    ),
-  fluidRow(
+    fluidRow(
     box(  
       column(6, dataTableOutput("tableleft")),
-      column(6, plotlyOutput("ToptenCONF")), width =15) 
-    
+      column(6, 
+             
+  # In this section goes the new tabsetPanel() function to support tabbed frames
+  # Then each tab is populated by tabPanel() function
+  tabsetPanel(id = "Threetabs",
+          tabPanel("Confirmed", plotlyOutput("ToptenCONFtab"),value = "confirmed"),
+          tabPanel("Recovered", plotlyOutput("ToptenRECtab"),value = "recovered"),
+          tabPanel("Deaths", plotlyOutput("ToptenDEATHtab"),value = "deaths")),
+  p("Bar plot displaying  confirmed, recovered and death cases by country ranked by total figures")),
+  width = 15), 
   ),
       
     # 5. Drop down menu to choose country for Plotly Line charts section
@@ -145,6 +155,10 @@ ui <- dashboardPage(
                                 c("All",
                                   unique(as.character(metric_rates$country)))))
     ),
+  
+  
+  
+  
     # 6. Three Plotly line charts
     fluidRow( box(  
       column(4, plotlyOutput("Confcountries")),
@@ -367,12 +381,11 @@ server <- function(input,output) {
     
   })
   
-  # OUTPUT 08 - Test Plotly chart in a container inclulding two items (item 02-02 PLOTLY CHART )
+  # OUTPUT 08 - Plotly bar chart in a container including three charts
   #             Metric: 'conf_x10,000pop_rate'
-  output$ToptenCONF = renderPlotly({
-    
-    # Using dynamic time-slider input data set  
-    metric_rates <- PLOTLYcharts()
+  # tabbed frame(01-03)
+  # Tabbed bar chart - Plot 01-03
+  output$ToptenCONFtab = renderPlotly({
     
     conf_top_cases <- metric_rates  %>%
       select(country,date,confirmed) %>% 
@@ -384,22 +397,71 @@ server <- function(input,output) {
       slice(1:10) %>% 
       ungroup()
     
-    COUNTRIES_flipped <- ggplot(conf_top_cases,
+    COUNTRIES_flipped_conf <- ggplot(conf_top_cases,
                                 aes(x = reorder(country, +confirmed), y = confirmed)) +
       geom_bar(position = 'dodge', stat = 'identity',fill = "deepskyblue3") +
-      geom_text(aes(label = confirmed), 
-                position = position_stack(vjust = 0.7)
-                ,size = 3 ) +  # Sabels INSIDE the bars we choose “    position = position_stack(vjust = 0.7) 
-      ggtitle("Total confirmed cases by Country") +
+      geom_text(aes(label = confirmed), position = position_dodge(width = 0.9),
+                vjust = -6.30, hjust = + 1.20) +  # Set vjust to -0.30 to display just a small gap between chart and figure 
+      ggtitle("Top 10 Countries by COVID-19 Confirmed cases") +
       coord_flip()
-    COUNTRIES_flipped
+    COUNTRIES_flipped_conf
     
+    ggplotly(COUNTRIES_flipped_conf)
     
-    ggplotly(COUNTRIES_flipped)
+  })
+  # Tabbed bar chart - Plot 02-03
+  # tabbed frame(02-03)
+    output$ToptenRECtab = renderPlotly({
+    
+    conf_top_cases <- metric_rates  %>%
+      select(country,date,recovered) %>% 
+      mutate(Max_date = max(metric_rates$date)) %>% 
+      mutate(Flag_max_date = ifelse(Max_date == date,1,0)) %>% 
+      filter(Flag_max_date==1) %>% 
+      arrange(desc('conf_x10,000pop_rate')) %>% 
+      group_by(date) %>% 
+      slice(1:10) %>% 
+      ungroup()
+    
+    COUNTRIES_flipped_rec <- ggplot(conf_top_cases,
+                                aes(x = reorder(country, + recovered), y = recovered)) +
+      geom_bar(position = 'dodge', stat = 'identity',fill = "darkseagreen2") +
+      geom_text(aes(label = recovered), position = position_dodge(width = 0.9),
+                vjust = -0.30, hjust = + 1.20) +  # Set vjust to -0.30 to display just a small gap between chart and figure 
+      ggtitle("Top 10 Countries by COVID-19 Recovered cases") +
+      coord_flip()
+    COUNTRIES_flipped_rec
+    
+    ggplotly(COUNTRIES_flipped_rec)
     
   })
   
-  
+  # Tabbed bar chart - Plot 03-03
+  # tabbed frame(03-03)
+  output$ToptenDEATHtab = renderPlotly({
+    
+    conf_top_cases <- metric_rates  %>%
+      select(country,date,deaths) %>% 
+      mutate(Max_date = max(metric_rates$date)) %>% 
+      mutate(Flag_max_date = ifelse(Max_date == date,1,0)) %>% 
+      filter(Flag_max_date==1) %>% 
+      arrange(desc('conf_x10,000pop_rate')) %>% 
+      group_by(date) %>% 
+      slice(1:10) %>% 
+      ungroup()
+    
+    COUNTRIES_flipped_death <- ggplot(conf_top_cases,
+                                aes(x = reorder(country, +deaths), y = deaths)) +
+      geom_bar(position = 'dodge', stat = 'identity',fill = "coral1") +
+      geom_text(aes(label = deaths), position = position_dodge(width = 0.9),
+                vjust = -0.30, hjust = + 1.20) +  # Set vjust to -0.30 to display just a small gap between chart and figure 
+      ggtitle("Top 10 Countries by COVID-19 Death cases") +
+      coord_flip()
+    COUNTRIES_flipped_death
+    
+    ggplotly(COUNTRIES_flipped_death)
+    
+  })
   # - FOURTH DASHBOARD SECTION - Plotly line charts -Confirmed, Recovered and Death cases
   
   # OUTPUT 08 > Confirmed cases plotly line chart - Country displayed select from UI Drop down menu

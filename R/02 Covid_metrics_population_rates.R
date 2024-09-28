@@ -2,7 +2,6 @@
 
 # Important: This scripts runs using source_all() adhoc function from \R sub-folder
 
-
 # AIM
 # merge original METRICS_FOR_POP_RATES.csv file stored in \original_data_processed 
 # with WDI_countries_pop_2019_clean.csv file stored in the same folder. 
@@ -145,7 +144,7 @@ rm(list=ls()[! ls() %in% c("METRICS_daily_calc","POPULATION_original","LEAFLET_M
 
 
 
-# 3.2 Apply regex expresions before merge to both METRICS_original and POPULATION_original files
+# 3.2 Apply regex expressions before merge to both METRICS_original and POPULATION_original files
 # Remove punctuation symbols Country_name = gsub("[[:punct:]]", "", Country)
 
 METRICS_cleansing <- METRICS_daily_calc %>% 
@@ -391,11 +390,7 @@ missing_countries_pop_final
 
 rm(list=ls()[! ls() %in% c("METRICS_POP_RATES_data","missing_countries_pop_final")])
 
-
-save.image("~/new_data/METRICS_AND_LEAFLETS_DATA.RData")
-
 # # A tibble: 0 × 1 There is no missing countries, all population figures have been included.
-
 LEAFLET_MAPS_DATA_cleansed <- METRICS_POP_RATES_data
 
 
@@ -431,13 +426,8 @@ METRICS_deaths_DAILY <- METRICS_POP_RATES_data %>%
   summarise(Deaths_d = sum(Deaths))
 METRICS_deaths_DAILY
 
-
 # 3.5.0.2 Now that I have all three metrics data (Confirmed, Recovered, Deaths) aggregated at daily level for each country 
 # Then I merge them back with POPULATION figures I had initially included on my original METRICS_POP_RATES_data file:
-
-
-
-
 
 # 3.5.0.3 Then I merge together Unique Metrics by day
 METRICS_POP_RATES_data_prep <- left_join(METRICS_conf_DAILY,METRICS_recovered_DAILY,
@@ -481,9 +471,6 @@ METRICS_POP_RATES_data_population <- left_join(METRICS_POP_RATES_data_prep2,
                                                by = join_by(Country))
 
 # Finally I can compute the rates for each of the countries with just one row per day and country
-
-
-
 # 3.5.1 Standard rates for each metric (Confirmed, Recovered, Deaths)
 METRICS_POP_RATES <- METRICS_POP_RATES_data_population %>% 
   select(Country,date,Confirmed = Confirmed_d,
@@ -496,8 +483,6 @@ METRICS_POP_RATES <- METRICS_POP_RATES_data_population %>%
   )
 
 METRICS_POP_RATES
-
-save.image("~/new_data/METRICS_POP_RATES.RData")
 
 # 3.5.2 # compute rolling average on POPRATESG WITHOUT ANY MISSING VALUE
 library(zoo)
@@ -624,7 +609,6 @@ LEAFLET_MAPS_FINAL_daily_recovered_deaths <- left_join(LEAFLET_MAPS_FINAL_daily_
 
 LEAFLET_MAPS_DATA <- LEAFLET_MAPS_FINAL_daily_recovered_deaths
 
-
 # 5. THEN MERGE IT WITH LAT LONG DATA 
 LEAFLET_MAPS_DATA
 
@@ -653,9 +637,6 @@ METRICS_POP_RATES_DATA_FINAL <- METRICS_POP_RATES_DATA %>% mutate(Country_filter
 # unique(METRICS_POP_RATES_DATA_FINAL$Country)
 
 rm(list=ls()[!(ls()%in%c('LEAFLET_MAPS_DATA_FINAL','METRICS_POP_RATES_DATA_FINAL'))])
-
-# Save final image to \new_data sub-folder
-save.image("~/new_data/FINAL_SHINY_DATASETS.RData")
 
 # Save final two datasets as .csv files to \new_data sub-folder
 write.csv(LEAFLET_MAPS_DATA_FINAL,here("new_data","LEAFLET_MAPS_DATA.csv"), row.names = TRUE)
