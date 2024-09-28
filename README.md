@@ -15,6 +15,13 @@ To run this app follow these two steps:
 
 > **git clone https://github.com/Pablo-source/Shiny-app-using-COVID-data.git**
 
+2-3. Run **renv::restore()**. When I ran the entire app I captured its final state using renv::smapshot()
+To ensure all required packages are loaded, we reinstall exact packages declared in the project lockfile renv.lock.
+Then we run **renv::restore()** to ensure we have all required packages loaded and ready in our R environment.
+
+The next step when using app_launch_TRIGGER.R will make use of all packages loaded by renv::restore() command.
+
+
 2-2. Open “**app_launch_TRIGGER.R** script”
 - Then  press **"Source"** button in RStudio to trigger the Shiny app.
 
