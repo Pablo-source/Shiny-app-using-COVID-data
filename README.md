@@ -10,7 +10,7 @@ This is a Shiny app demo to practice how to create interactive visualizations in
 
 To run this app follow these two steps:
 
-1-2. Clone **Shiny-app-using-COVID-data** repo using git on you IDE or your terminal using local Clone HTTPS option
+1-3. Clone **Shiny-app-using-COVID-data** repo using git on you IDE or your terminal using local Clone HTTPS option
 <https://github.com/Pablo-source/Shiny-app-using-COVID-data.git>
 
 > **git clone https://github.com/Pablo-source/Shiny-app-using-COVID-data.git**
@@ -21,8 +21,9 @@ Then we run **renv::restore()** to ensure we have all required packages loaded a
 
 The next step when using app_launch_TRIGGER.R will make use of all packages loaded by renv::restore() command.
 
+> **renv::restore()**
 
-2-2. Open “**app_launch_TRIGGER.R** script”
+3-3. Open “**app_launch_TRIGGER.R** script”
 - Then  press **"Source"** button in RStudio to trigger the Shiny app.
 
 ## Data downloaded from Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE) repository
