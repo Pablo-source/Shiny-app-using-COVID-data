@@ -91,8 +91,9 @@ Added legend to Leaflet map
 ![06_Leaflet_map_number_of_deaths_legend](https://github.com/user-attachments/assets/16734f33-d54f-44bd-9de0-9cfee53d8ed8)
 
 - Included new dynamic **plotly** bar chart displaying total cases, based on time slider animation date values
+- I have used tabsetPanel() function  to support tabbed frames,Then each tab is populated by tabPanel() function.
+![image](https://github.com/user-attachments/assets/469c02b4-5255-4c47-ad3f-b9758d409ae7)
 
-![05_Dynamic_table_bar_chart_plots](https://github.com/user-attachments/assets/700f4235-44aa-4123-9ced-cc0c5288f404)
 
 - Added new section at the end of the dashboard including **interactive plotly line charts** by selected country from drop down menu
 
