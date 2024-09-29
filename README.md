@@ -29,9 +29,9 @@ Then open the entire Rproject by clicking on the **Shiny-app-using-COVID-data.Rp
 To ensure all required packages are loaded, we reinstall exact packages declared in the project lockfile renv.lock.
 Then we run **renv::restore()** to ensure we have all required packages loaded and ready in our R environment.
 
-In the next step when using **app_launch_TRIGGER.R** script, we will have all required packages for the app loaded by the **renv::restore()** command.
-
 > **renv::restore()**
+
+In the next step when using **app_launch_TRIGGER.R** script, we will have all required packages for the app loaded by the **renv::restore()** command.
 
 3-3. Open “**app_launch_TRIGGER.R** script”
 - Then  press **"Source"** button in RStudio to trigger the Shiny app.
