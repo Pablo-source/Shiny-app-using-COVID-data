@@ -4,22 +4,31 @@
 
 # Shiny-app-using-COVID-data
 
-This is a Shiny app demo to practice how to create interactive visualizations in R. Using drop down filters to display information by countries and also adding  animations to show progress in time of covid19 cases around the world.
+This Shiny app displays several visualizations in an interactive Shiny Dashboard. Users can explore COVID19  confirmed, recovered and death COVID cases hovering over the charts and also interact with the timeline bar to obtain an interactive evolution of cases around the world by countries.
 
+Following RAP principles, applied **renv::init()** to initialise environment and also taken a snapshot of the project with **renv::snapshot()**, once the Shiny app has ran. The entire environment can be replicated just by running **renv::restore()** after opening the R project file. 
+
+Features:  
+
+- Created a couple of adhoc functions to download original .csv files from (JHU CSSE) repository, they include an automated triger to downlod the data every half an hour. It is an example to fetch online data for Shiny applications runing 24/7. 
+
+- In  *API_Obtain_countries_Lat_Long.R** script, there is an example on how to use {tidygeocoder] to perform geocoding queries to obtain latitute and longitude coordinates with geo() function. The api_parameter_reference maps the API parameters for each geocoding service common set of “generic” parameters. 
 ## How to run this Shiny app locally on your machine
 
-To run this app follow these two steps:
+To run this app follow these **three** steps:
 
 1-3. Clone **Shiny-app-using-COVID-data** repo using git on you IDE or your terminal using local Clone HTTPS option
 <https://github.com/Pablo-source/Shiny-app-using-COVID-data.git>
 
 > **git clone https://github.com/Pablo-source/Shiny-app-using-COVID-data.git**
 
-2-3. Run **renv::restore()**. When I ran the entire app I captured its final state using renv::smapshot()
+Then open the entire Rproject by clicking on the **Shiny-app-using-COVID-data.Rproj** file. This will display the Shiny app files on your "Files" tab in RStudio.
+
+2-3. Run **renv::restore()**. The first time the app finshed running, I captured its final state using **renv::smapshot()**
 To ensure all required packages are loaded, we reinstall exact packages declared in the project lockfile renv.lock.
 Then we run **renv::restore()** to ensure we have all required packages loaded and ready in our R environment.
 
-The next step when using app_launch_TRIGGER.R will make use of all packages loaded by renv::restore() command.
+In the next step when using **app_launch_TRIGGER.R** script, we will ahve all required packages for the app loaded by the **renv::restore()** command.
 
 > **renv::restore()**
 
