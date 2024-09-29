@@ -25,7 +25,7 @@ To run this **Shiny-app-using-COVID-data** app follow these **three** steps belo
 
 Then open the entire Rproject by clicking on the **Shiny-app-using-COVID-data.Rproj** file. This will display the Shiny app files on your "Files" tab in RStudio.
 
-2-3. Run **renv::restore()**. The first time the app finshed running, I captured its final state using **renv::snapshot()**
+2-3. Run **renv::restore()** in a new Rscript. The first time the app finshed running, I captured its final state using **renv::snapshot()**
 To ensure all required packages are loaded, we reinstall exact packages declared in the project lockfile renv.lock.
 Then we run **renv::restore()** to ensure we have all required packages loaded and ready in our R environment.
 
