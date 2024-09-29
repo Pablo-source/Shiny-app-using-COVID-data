@@ -52,13 +52,13 @@ I have read the data directly into R with an ad hoc function DownloadCOVIDData()
 
 These are the three input files read into R directly from the “archived_time_series” folder of the CSSEGISandData/COVID-19 repository:  
 
-- [1] "time_series_19-covid-Confirmed_archived_0325.csv" "time_series_19-covid-Deaths_archived_0325.csv"   
+- [1] "time_series_19-covid-Confirmed_archived_0325.csv"
+- [2] "time_series_19-covid-Deaths_archived_0325.csv"   
 - [3] "time_series_19-covid-Recovered_archived_0325.csv"
 
 This is an example of the path for COVID-19 Cofirmed cases  file: 
 
 1-2. First I located the specific file in the \archived_fime_series folder:
-
 https://github.com/CSSEGISandData/COVID-19/blob/master/archived_data/archived_time_series/time_series_19-covid-Confirmed_archived_0325.csv
 
 2-2. Then I obtained the final URL using the “Raw” button. This allows the the download.file() function to download the file directly from the original URL location to my local machine
