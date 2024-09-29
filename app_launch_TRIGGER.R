@@ -6,6 +6,5 @@
 library(renv)
 
 # 1. Initialise my environment
-renv::init()
 source("app_launcher.R")
 
