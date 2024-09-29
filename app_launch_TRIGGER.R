@@ -5,11 +5,11 @@
 # Initialising renv for this project 
 library(renv)
 
-# 1. Install shiny and load shiny and shinydashboard libraries
+# 2. Install shiny and load shiny and shinydashboard libraries
 install.packages("shiny", type = "binary", dependencies = TRUE)
 library(shiny)
 library(shinydashboard)
 
-# 2. Source script to launch Shiny app
+# 3. Source script to launch Shiny app
 source("app_launcher.R")
 
