@@ -12,7 +12,7 @@ Features:
 
 - Created a couple of adhoc functions to download original .csv files from (JHU CSSE) repository, they include an automated triger to downlod the data every half an hour. It is an example to fetch online data for Shiny applications runing 24/7. 
 
-- In  *API_Obtain_countries_Lat_Long.R** script, there is an example on how to use {tidygeocoder] to perform geocoding queries to obtain latitute and longitude coordinates with geo() function. The api_parameter_reference maps the API parameters for each geocoding service common set of “generic” parameters. 
+- In  *API_Obtain_countries_Lat_Long.R* script, there is an example on how to use {tidygeocoder] to perform geocoding queries to obtain latitute and longitude coordinates with geo() function. The api_parameter_reference maps the API parameters for each geocoding service common set of “generic” parameters. 
 ## How to run this Shiny app locally on your machine
 
 To run this app follow these **three** steps:
