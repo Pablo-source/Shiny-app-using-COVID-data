@@ -31,6 +31,8 @@ Then we run **renv::restore()** to ensure we have all required packages loaded a
 
 > **renv::restore()**
 
+If prompted, after running restore() function, choose "1: Activate the project and use the project library." from menu displayed in the R Console.
+
 In the next step when using **app_launch_TRIGGER.R** script, we will have all required packages for the app loaded by the **renv::restore()** command.
 
 3-3. Open “**app_launch_TRIGGER.R** script”
