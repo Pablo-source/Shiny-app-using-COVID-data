@@ -21,6 +21,7 @@ install.packages(c("janitor"),dependencies = TRUE)
 
 library(shiny)
 library(shinydashboard)
+library(janitor)
 
 # 3. Source script to launch Shiny app
 source("app_launcher.R")
