@@ -97,7 +97,7 @@ Added legend to Leaflet map
 ![image](https://github.com/user-attachments/assets/23d79175-e9d3-448e-9057-fae19f8102f8)
 
 
-- Added new section at the end of the dashboard including **interactive plotly line charts** by selected country from drop down menu
+- Added new section at the end of the dashboard containing **interactive plotly line charts** by selected country from drop down menu
 
 ![10_Plotly_interactive_charts_Germany](https://github.com/user-attachments/assets/6304c90c-8696-4688-a1f0-a700cc692c0c)
 
