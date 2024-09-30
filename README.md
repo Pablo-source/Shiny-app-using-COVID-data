@@ -16,7 +16,7 @@ Features:
   
 ## How to run this Shiny app on your machine
 
-To run this **Shiny-app-using-COVID-data** app follow these **three** steps below:
+To run this **Shiny-app-using-COVID-data** follow these **three** steps below:
 
 1-3. Clone **Shiny-app-using-COVID-data** repo using git on you IDE or your terminal using local Clone HTTPS option
 <https://github.com/Pablo-source/Shiny-app-using-COVID-data.git>
