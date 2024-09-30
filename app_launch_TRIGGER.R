@@ -17,6 +17,7 @@ library(renv)
 # - Installing shinydashboard ...                 OK [linked from cache in 0.00029s]
 # We can install them manually
 install.packages(c("shiny","shinydashboard"),dependencies = TRUE)
+install.packages(c("janitor"),dependencies = TRUE)
 
 library(shiny)
 library(shinydashboard)
