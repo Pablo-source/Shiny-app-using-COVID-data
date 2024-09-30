@@ -94,6 +94,8 @@ Added legend to Leaflet map
 - I have used tabsetPanel() function  to support tabbed frames,Then each tab is populated by tabPanel() function.
 ![image](https://github.com/user-attachments/assets/469c02b4-5255-4c47-ad3f-b9758d409ae7)
 
+![image](https://github.com/user-attachments/assets/23d79175-e9d3-448e-9057-fae19f8102f8)
+
 
 - Added new section at the end of the dashboard including **interactive plotly line charts** by selected country from drop down menu
 
